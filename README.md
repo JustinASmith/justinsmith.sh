@@ -19,20 +19,9 @@ Facing issues? Check the [FAQ page](https://github.com/timlrx/tailwind-nextjs-st
 
 Feature request? Check the past discussions to see if it has been brought up previously. Otherwise, feel free to start a new discussion thread. All ideas are welcomed!
 
-Looking for an Astro alternative? Check out the unofficial [Tailwind Astro Template](https://github.com/wanoo21/tailwind-astro-starting-blog).
-
-Looking for a Remix-run alternative? Check out the unofficial [Tailwind Remix-run Starter Blog Template](https://github.com/SangeetAgarwal/tailwind-remix-run-mdxjs-typescript-starter-blog).
-
 ## Examples V2
 
 - [Demo Blog](https://tailwind-nextjs-starter-blog.vercel.app/) - this repo
-- [My personal blog](https://www.timlrx.com) - modified to auto-generate blog posts with dates
-- [ben.codes blog](https://ben.codes) - Benoit's personal blog about software development ([source code](https://github.com/bendotcodes/bendotcodes))
-- [tsix blog](https://tsix.top) - A front-end engineer is used to record some knowledge points in work and study _中文_
-- [SOTO's Blog](https://www.atksoto.com/) - A more personalized personal website upgraded from V1 ([source code](https://github.com/acsoto/soto-blog-nextjs))
-- [Prabhu's Blog](https://prabhukirankonda.vercel.app) - Prabhu's Personal website with blog ([source code](https://github.com/prabhukiran8790/prabhukirankonda))
-- [Rabby Hasan's Blog](https://blog.rabbyhasan.com.bd/) - Rabby Hasan's personal blog about full stack development with cloud ([source code](https://github.com/rabbyalone/myblog))
-- [enscribe.dev](https://enscribe.dev) - enscribe's personal blog; cybersecurity shenanigans, frontend webdev, etc. ([source code](https://github.com/jktrn/enscribe.dev))
 
 Using the template? Feel free to create a PR and add your blog to this list.
 
@@ -40,8 +29,9 @@ Using the template? Feel free to create a PR and add your blog to this list.
 
 [v1-blogs-showcase.webm](https://github.com/timlrx/tailwind-nextjs-starter-blog/assets/28362229/2124c81f-b99d-4431-839c-347e01a2616c)
 
-Thanks to the community of users and contributors to the template! We are no longer accepting new blog listings over here. If you have updated from version 1 to version 2, feel free to remove your blog from this list and add it to the one above.
+Thanks to the community of users and contributers to the template! We are no longer accepting new blog listings over here. If you have updated from version 1 to version 2, feel free to remove your blog from this list and add it to the one above.
 
+- [My personal blog](https://www.timlrx.com) - modified to auto-generate blog posts with dates
 - [Aloisdg's cookbook](https://tambouille.vercel.app/) - with pictures and recipes!
 - [GautierArcin's demo with next translate](https://tailwind-nextjs-starter-blog-seven.vercel.app/) - includes translation of mdx posts, [source code](https://github.com/GautierArcin/tailwind-nextjs-starter-blog/tree/demo/next-translate)
 - [David Levai's digital garden](https://davidlevai.com/) - customized design and added email subscriptions
@@ -73,7 +63,6 @@ Thanks to the community of users and contributors to the template! We are no lon
 - [justingosses.com](https://justingosses.com/) - Justin Gosses's personal website and blog ([source code](https://github.com/JustinGOSSES/justingosses-website))
 - [https://bitoflearning-9a57.fly.dev/](https://bitoflearning-9a57.fly.dev/) - Sangeet Agarwal's personal blog, replatformed to [remix](https://remix.run/remix) using the [indie stack](https://github.com/remix-run/indie-stack) ([source code](https://github.com/SangeetAgarwal/bitoflearning))
 - [raphaelchelly.com](https://www.raphaelchelly.com/) - Raphaël Chelly's personal website and blog ([source code](https://github.com/raphaelchelly/raph_www))
-- [kaveh.page](https://kaveh.page) - Kaveh Tehrani's personal blog. Added tags directory, profile card, time-to-read on posts directory, etc.
 
 ## Motivation
 
@@ -240,147 +229,9 @@ See [Next.js on Netlify](https://docs.netlify.com/integrations/frameworks/next-j
 **Static hosting services / GitHub Pages / S3 / Firebase etc.**
 
 1. Add `output: 'export'` in `next.config.js`. See [static exports documentation](https://nextjs.org/docs/app/building-your-application/deploying/static-exports#configuration) for more information.
-2. Comment out `headers()` from `next.config.js`.
-3. Change `components/Image.tsx` to use a standard `<img>` tag instead of `next/image`:
-
-   ```ts
-   /* eslint-disable jsx-a11y/alt-text */
-   /* eslint-disable @next/next/no-img-element */
-   import NextImage, { ImageProps } from 'next/image'
-
-   // @ts-ignore
-   const Image = ({ ...rest }: ImageProps) => <img {...rest} />
-
-   export default Image
-   ```
-
-   Alternatively, to continue using `next/image`, you can use an alternative image optimization provider such as Imgix, Cloudinary or Akamai. See [image optimization documentation](https://nextjs.org/docs/app/building-your-application/deploying/static-exports#image-optimization) for more details.
-
-4. Remove `api` folder and components which call the server-side function such as the Newsletter component. Not technically required and the site will build successfully, but the APIs cannot be used as they are server-side functions.
-5. Run `yarn build`. The generated static content is in the `out` folder.
-6. Deploy the `out` folder to your hosting service of choice or run `npx serve out` to view the website locally.
-
-## Frequently Asked Questions
-
-### How can I add a custom MDX component?
-
-Here's an example on how to create a donut chart from Chart.js (assuming you already have the dependencies installed) and use it in MDX posts. First, create a new `DonutChart.tsx` component in `components`:
-
-```tsx
-'use client'
-
-import { Doughnut } from 'react-chartjs-2'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-
-ChartJS.register(ArcElement, Tooltip, Legend)
-
-const DonutChart = ({ data }) => {
-  return <Doughnut data={data} />
-}
-
-export default Doughnut
-```
-
-Since the underlying `Doughnut` component uses React hooks, we add the `'use client'` directive to specify that it is a client side component. Also, there is an existing issue which prevents named components from being used, so we need to export the component as the default export.
-
-Next, add the component to `MDXComponents.tsx`:
-
-```diff
-...
-+ import DonutChart from './DonutChart'
-
-export const components: MDXComponents = {
-  Image,
-  TOCInline,
-  a: CustomLink,
-  pre: Pre,
-+  DonutChart,
-  BlogNewsletterForm,
-}
-```
-
-You can now use the component in `.mdx` files:
-
-```mdx
-## Example Donut Chart
-
-export const data = {
-  labels: ['Red', 'Blue', 'Yellow'],
-  datasets: [
-    {
-      label: '# of Votes',
-      data: [12, 19, 3],
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-      ],
-      borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'],
-      borderWidth: 1,
-    },
-  ],
-}
-
-<DonutChart data={data} />
-```
-
-### How can I customize the `kbar` search?
-
-Add a `SearchProvider` component such as the one shown below and use it in place of the default `SearchProvider` component in `app/layout.tsx`.
-
-`defaultActions` are the initial list of actions.
-
-`onSearchDocumentsLoad` is a callback function that is called when the documents specified by `searchDocumentsPath` are loaded. Set `searchDocumentsPath` to `false` to disable the dynamically loaded search feature.
-
-```tsx
-'use client'
-
-import { KBarSearchProvider } from 'pliny/search/KBar'
-import { useRouter } from 'next/navigation'
-import { CoreContent } from 'pliny/utils/contentlayer'
-import { Blog } from 'contentlayer/generated'
-
-export const SearchProvider = ({ children }) => {
-  const router = useRouter()
-  return (
-    <KBarSearchProvider
-      kbarConfig={{
-        searchDocumentsPath: 'search.json',
-        defaultActions: [
-          {
-            id: 'homepage',
-            name: 'Homepage',
-            keywords: '',
-            shortcut: ['h', 'h'],
-            section: 'Home',
-            perform: () => router.push('/'),
-          },
-          {
-            id: 'projects',
-            name: 'Projects',
-            keywords: '',
-            shortcut: ['p'],
-            section: 'Home',
-            perform: () => router.push('/projects'),
-          },
-        ],
-        onSearchDocumentsLoad(json) {
-          return json.map((post: CoreContent<Blog>) => ({
-            id: post.path,
-            name: post.title,
-            keywords: post?.summary || '',
-            section: 'Blog',
-            subtitle: post.tags.join(', '),
-            perform: () => router.push(post.path),
-          }))
-        },
-      }}
-    >
-      {children}
-    </KBarSearchProvider>
-  )
-}
-```
+2. Change `components/Image.tsx` to use a standard `<img>` tag instead of `next/image`. Alternatively, to continue using `next/image`, you can use an alternative image optimization provider such as Imgix, Cloudinary or Akamai. See [image optimization documentation](https://nextjs.org/docs/app/building-your-application/deploying/static-exports#image-optimization) for more details.
+3. Remove `api` folder and components which call the server-side function such as the Newsletter component.
+4. Run `yarn build`. The generated static content is in the `out` folder.
 
 ## Support
 
