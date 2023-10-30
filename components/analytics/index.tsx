@@ -1,4 +1,4 @@
-import { siteMetadata } from '@/data/siteMetadata'
+import siteMetadata from '@/data/siteMetadata'
 import { UmamiScript } from './Umami'
 
 let isProduction = process.env.NODE_ENV === 'production'
