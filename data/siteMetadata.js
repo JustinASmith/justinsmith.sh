@@ -15,9 +15,10 @@ const siteMetadata = {
   linkedin: 'https://www.linkedin.com/in/justin-a-smith662',
   locale: 'en-US',
   analytics: {
-    plausibleAnalytics: {
-      plausibleDataDomain: 'justinsmith.sh',
-    },
+    plausibleDataDomain: '',
+    simpleAnalytics: false, // true | false
+    umamiWebsiteId: '8c93b038-53e9-4bf6-b5f9-0f29716bb73d',
+    googleAnalyticsId: '', // e.g. UA-000000-2 or G-XXXXXXX
   },
   newsletter: {
     // Please add your .env file and modify it according to your selection
