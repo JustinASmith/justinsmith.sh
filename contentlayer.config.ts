@@ -6,6 +6,7 @@ import path from 'path'
 // Remark packages
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
+import remarkFootnotes from 'remark-footnotes'
 import {
   remarkExtractFrontmatter,
   remarkCodeTitles,
@@ -23,17 +24,24 @@ import siteMetadata from './data/siteMetadata'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
 
 const root = process.cwd()
-const isProduction = process.env.NODE_ENV === 'production'
+
+/**
+ * Remove yyyy-mm-dd and extension in file path to generate slug
+ */
+function formatSlug(slug) {
+  const regex = /(\d{4})-(\d{2})-(\d{2})-/g
+  return slug.replace(regex, '')
+}
 
 const computedFields: ComputedFields = {
   readingTime: { type: 'json', resolve: (doc) => readingTime(doc.body.raw) },
   slug: {
     type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath.replace(/^.+?(\/)/, ''),
+    resolve: (doc) => formatSlug(doc._raw.flattenedPath.replace(/^.+?(\/)/, '')),
   },
   path: {
     type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath,
+    resolve: (doc) => formatSlug(doc._raw.flattenedPath),
   },
   filePath: {
     type: 'string',
@@ -48,7 +56,7 @@ const computedFields: ComputedFields = {
 function createTagCount(allBlogs) {
   const tagCount: Record<string, number> = {}
   allBlogs.forEach((file) => {
-    if (file.tags && (!isProduction || file.draft !== true)) {
+    if (file.tags && file.draft !== true) {
       file.tags.forEach((tag) => {
         const formattedTag = GithubSlugger.slug(tag)
         if (formattedTag in tagCount) {
@@ -89,7 +97,7 @@ export const Blog = defineDocumentType(() => ({
     images: { type: 'json' },
     authors: { type: 'list', of: { type: 'string' } },
     layout: { type: 'string' },
-    bibliography: { type: 'string' },
+    bibliography: { type: 'json' },
     canonicalUrl: { type: 'string' },
   },
   computedFields: {
@@ -104,7 +112,9 @@ export const Blog = defineDocumentType(() => ({
         dateModified: doc.lastmod || doc.date,
         description: doc.summary,
         image: doc.images ? doc.images[0] : siteMetadata.socialBanner,
-        url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+        url: `${siteMetadata.siteUrl}/${formatSlug(
+          doc._raw.flattenedPath.replace(/^.+?(\/)/, '')
+        )}`,
       }),
     },
   },
@@ -137,6 +147,7 @@ export default makeSource({
       remarkExtractFrontmatter,
       remarkGfm,
       remarkCodeTitles,
+      [remarkFootnotes, { inlineNotes: true }],
       remarkMath,
       remarkImgToJsx,
     ],
@@ -144,8 +155,10 @@ export default makeSource({
       rehypeSlug,
       rehypeAutolinkHeadings,
       rehypeKatex,
-      [rehypeCitation, { path: path.join(root, 'data') }],
+      // @ts-ignore
+      [rehypeCitation, { path: path.join(root, 'data'), linkCitations: true }],
       [rehypePrismPlus, { defaultLanguage: 'js', ignoreMissing: true }],
+      // @ts-ignore
       rehypePresetMinify,
     ],
   },
