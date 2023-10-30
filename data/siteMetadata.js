@@ -1,6 +1,6 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'Justin Smith',
+  title: 'justinsmith.sh',
   author: 'Justin Smith',
   headerTitle: '~$ justinsmith.sh',
   description: 'Thoughts from a wandering mind',
