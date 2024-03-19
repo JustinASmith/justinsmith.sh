@@ -16,7 +16,7 @@ export default function Home({ posts }) {
           </h1>
           <h2 className="prose text-lg text-gray-600 dark:text-gray-400">
             {`Welcome to my blog - ${siteMetadata.description}. I am a data
-            engineer by profession and a blockchain security researcher in training.
+            engineer by day and a continuous learner by night.
             In my free time, I like developing `}
             <Link href="/projects">side projects</Link>
             {' and '}
