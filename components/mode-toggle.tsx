@@ -1,16 +1,14 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
 
 export function ModeToggle() {
   const { setTheme, theme } = useTheme();
 
   return (
-    <Button
+    <div
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      variant="ghost"
-      size="icon"
+      className="group hover:bg-transparent"
     >
       <span className="sr-only">Toggle mode</span>
       {theme !== "dark" ? (
@@ -20,7 +18,7 @@ export function ModeToggle() {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 group-hover:stroke-primary"
         >
           <path
             strokeLinecap="round"
@@ -35,7 +33,7 @@ export function ModeToggle() {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 group-hover:stroke-primary"
         >
           <path
             strokeLinecap="round"
@@ -44,6 +42,6 @@ export function ModeToggle() {
           />
         </svg>
       )}
-    </Button>
+    </div>
   );
 }
