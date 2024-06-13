@@ -34,7 +34,7 @@ const Hero = () => {
 
           <Button
             variant="default"
-            className="text-md text-secondary font-bold text-md"
+            className="text-md text-white font-bold text-md"
             asChild
           >
             <a
