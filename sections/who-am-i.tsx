@@ -1,10 +1,9 @@
 "use client";
 import React from "react";
 import Gallery from "@/components/ui/gallery";
-import Link from "next/link";
 import { BasicCard } from "@/components/ui/basic-card";
-import Divider from "@/components/divider";
-import { Noise } from "@/components/noise";
+import ToolsIUse from "@/components/tools-i-use";
+import About from "@/components/about";
 
 export function WhoAmISection() {
   return (
@@ -14,42 +13,12 @@ export function WhoAmISection() {
     >
       <BasicCard
         className="!py-8"
-        containerClassName="col-span-1 row-span-2 p-0 m-0 bg-cyan-700 relative rounded-2xl overflow-hidden"
+        containerClassName="col-span-1 row-span-3 p-0 m-0 bg-cyan-600 relative rounded-2xl overflow-hidden shadow-md"
       >
-        <Noise />
-        <h2 className="text-left text-balance text-2xl font-semibold tracking-[-0.015em] text-white mb-2">
-          Who Am I?
-        </h2>
-        <Divider />
-        <h3 className="text-left text-balance text-xs font-normal tracking-[0.015em] text-white/75 mt-8 uppercase">
-          My Story
-        </h3>
-        <p className="mt-2 text-left text-base text-neutral-100">
-          I was raised on the country roads of Northeast Mississippi. Since I
-          was a young boy, I{"'"}ve had a passion for technology and computers.
-          My first computer was a desktop that my cousin helped me build. I was
-          so excited to play games and learn how to use it. I quickly became
-          enamored by the inner workings of the software and how to create my
-          own.
-        </p>
-        <h3 className="text-left text-balance text-xs font-normal tracking-[0.015em] text-white/75 mt-8 uppercase">
-          What I do now?
-        </h3>
-        <p className="mt-2 text-left text-base text-neutral-100">
-          Today I{"'"}m a Senior Data Engineer, working at{" "}
-          <Link
-            target="_blank"
-            href="https://www.camgian.com/"
-            className="z-20 underline hover:cursor-pointer"
-          >
-            Camgian
-          </Link>{" "}
-          helping fleet managers and maintenance supervisors to make data-driven
-          decisions by prioritizing asset maintenance.
-        </p>
+        <About />
       </BasicCard>
       <BasicCard
-        containerClassName="col-span-1 row-span-1 bg-primary/10 p-0 m-0"
+        containerClassName="col-span-1 row-span-2 bg-primary/10 p-0 m-0 overflow-hidden shadow-md"
         className="!m-0 !p-0"
       >
         <Gallery
@@ -83,17 +52,12 @@ export function WhoAmISection() {
         />
       </BasicCard>
       <BasicCard
-        containerClassName="relative col-span-1 row-span-1 bg-indigo-500"
-        className="bg-dot-small-white/[0.2]"
+        className="!py-8"
+        containerClassName="col-span-1 row-span-1 p-0 m-0 bg-blue-500 relative rounded-2xl overflow-hidden shadow-md"
       >
-        <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-          No shirt, no shoes, no weapons.
-        </h2>
-        <p className="mt-4 max-w-[26rem] text-left  text-base/6 text-neutral-200">
-          If someone yells “stop!”, goes limp, or taps out, the fight is over.
-        </p>
+        <ToolsIUse />
       </BasicCard>
-      <BasicCard containerClassName="col-span-1 row-span-2 bg-blue-900">
+      <BasicCard containerClassName="col-span-1 row-span-2 bg-blue-900 overflow-hidden shadow-md">
         <div className="max-w-sm">
           <h2 className="max-w-sm md:max-w-lg  text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
             Signup for blazing-fast cutting-edge state of the art Gippity AI
@@ -104,6 +68,12 @@ export function WhoAmISection() {
             popular AI platform for developers.
           </p>
         </div>
+      </BasicCard>
+      <BasicCard
+        className="!py-8"
+        containerClassName="col-span-1 row-span-1 p-0 m-0 bg-blue-500 relative rounded-2xl overflow-hidden shadow-md"
+      >
+        <ToolsIUse />
       </BasicCard>
     </section>
   );
