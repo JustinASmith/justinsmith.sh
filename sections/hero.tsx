@@ -37,9 +37,12 @@ const Hero = () => {
               development can propel your next big project forward.
             </p>
           </div>
-          <button className="bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary-dark transition-all duration-300 text-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
+          <a
+            href="#contact"
+            className="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary-dark transition-all duration-300 text-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+          >
             Contact Me
-          </button>
+          </a>
         </div>
 
         <div className="hidden lg:flex lg:w-1/2 justify-center items-center">
