@@ -40,6 +40,11 @@ export function WhoAmISection() {
               overlayText: "First time eating Hurt Donuts!",
             },
             {
+              url: "/gallery/cactus_rock.jpg",
+              alt: "Disc Golf at Cactus Rock",
+              overlayText: "Disc Golf at Cactus Rock!",
+            },
+            {
               url: "/gallery/coconut_water.jpg",
               alt: "Coconut water on honeymoon in jamaica",
               overlayText: "Coconut water in Jamaica!",
