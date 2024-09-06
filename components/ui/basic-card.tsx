@@ -14,7 +14,7 @@ export const BasicCard = ({
   return (
     <section
       className={cn(
-        "mx-auto w-full bg-primary relative rounded-2xl overflow-hidden",
+        "mx-auto w-full relative rounded-2xl overflow-hidden",
         containerClassName
       )}
     >

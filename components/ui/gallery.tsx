@@ -34,7 +34,7 @@ const Gallery = ({ images }: GalleryProps) => {
             className={cn("object-cover min-h-4xl", image.className)}
           />
           {image.overlayText && (
-            <div className="absolute bottom-0 left-0 w-full text-center text-white font-medium text-lg bg-primary/75 py-4 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute bottom-0 left-0 w-full text-center text-white font-medium text-lg bg-slate-600/75 py-4 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               {image.overlayText}
             </div>
           )}

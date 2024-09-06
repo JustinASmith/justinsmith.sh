@@ -6,7 +6,7 @@ type Props = {};
 export default function ToolsIUse({}: Props) {
   return (
     <>
-      <h2 className="text-left text-balance text-2xl font-semibold tracking-[-0.015em] text-white mb-8">
+      <h2 className="text-left text-balance text-2xl lg:text-3xl font-semibold tracking-[-0.015em] text-white mb-8">
         Tools I Use
       </h2>
       <InfiniteMovingImages
@@ -23,41 +23,61 @@ const tools = [
   {
     url: "https://git-scm.com/",
     src: "/tools/git.svg",
-    alt: "Git Icon",
+    alt: "Git Logo",
   },
   {
     url: "https://kafka.apache.org/",
     src: "/tools/kafka.svg",
-    alt: "Kafka Icon",
+    alt: "Kafka Logo",
+  },
+  {
+    url: "https://nextjs.org/",
+    src: "/tools/next.svg",
+    alt: "Next.js Logo",
   },
   {
     url: "",
     src: "/tools/jenkins.svg",
-    alt: "Jenkins Icon",
+    alt: "Jenkins Logo",
   },
   {
     url: "https://www.postgresql.org/",
     src: "/tools/postgres.svg",
-    alt: "PostgreSQL Icon",
+    alt: "PostgreSQL Logo",
+  },
+  {
+    url: "https://www.docker.com/",
+    src: "/tools/docker.svg",
+    alt: "Docker Logo",
+  },
+  {
+    url: "https://vercel.com/",
+    src: "/tools/vercel.svg",
+    alt: "Vercel Logo",
+  },
+  {
+    url: "https://kubernetes.io/",
+    src: "/tools/k8s.svg",
+    alt: "Kubernetes Logo",
+  },
+  {
+    url: "https://react.dev/",
+    src: "/tools/react.svg",
+    alt: "React Logo",
   },
   {
     url: "https://code.visualstudio.com/",
     src: "/tools/vscode.svg",
-    alt: "VS Code Icon",
+    alt: "VS Code Logo",
   },
   {
     url: "https://www.python.org/",
     src: "/tools/python.svg",
-    alt: "Python Icon",
+    alt: "Python Logo",
   },
   {
-    url: "https://www.rabbitmq.com/",
-    src: "/tools/rabbitmq.svg",
-    alt: "RabbitMQ Icon",
-  },
-  {
-    url: "https://www.postman.com/",
-    src: "/tools/postman.svg",
-    alt: "Postman Icon",
+    url: "https://aws.amazon.com/",
+    src: "/tools/aws.svg",
+    alt: "Amazon Web Services Logo",
   },
 ];

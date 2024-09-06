@@ -1,50 +1,66 @@
 import React from "react";
-import { SendIcon } from "lucide-react";
-import { Button } from "../components/ui/button";
+import Image from "next/image";
 
 const Hero = () => {
   return (
-    <section className="relative bg-background bg-grid-black/[0.05] dark:bg-grid-white/[0.05]">
-      <div className="prose dark:prose-invert max-w-4xl mx-auto py-24">
-        <div
-          className="absolute pointer-events-none inset-0 h-full flex items-center justify-center
-         bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_1%,black)]"
-        />
-        <div className="hidden lg:block absolute left-0 top-[27ch] h-36 w-16 bg-transparent antialiased bg-dot-[#009969] dark:bg-dot-[#07cf90]"></div>
-        <div className="hidden lg:block absolute top-[17ch] right-0 h-24 w-20 bg-transparent antialiased bg-dot-[#009969] dark:bg-dot-[#07cf90]"></div>
-        <div className="container w-full flex flex-col items-start justify-center relative z-10">
-          <p className="text-primary text-lg font-bold m-0">Hi my name is</p>
+    <section className="relative py-24 px-4 sm:px-8 md:px-20 max-w-7xl mx-auto min-h-screen flex items-center">
+      <span
+        aria-hidden="true"
+        className="bg-text absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-12 text-gray-100 dark:text-[#21303c] text-9xl scale-150 tracking-wide font-bold select-none pointer-events-none text-center z-0 w-full"
+      >
+        PASSIONATE ENGINEER CREATIVE DATA-DRIVEN
+      </span>
 
-          <h1 className="text-[40px] md:text-5xl lg:text-6xl m-0 my-2 ">
-            Justin Smith
-          </h1>
+      <div className="z-10 relative flex flex-col lg:flex-row items-center justify-between gap-8 w-full">
+        <div className="w-full lg:w-1/2 space-y-8">
+          <div className="space-y-4">
+            <span className="text-primary text-xl font-bold dark:text-carrigreen block">
+              Hi, my name is
+            </span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight">
+              Justin Smith
+            </h1>
+            <span className="text-2xl md:text-3xl lg:text-4xl block text-primary dark:text-carrigreen font-semibold">
+              Engineer & Data Specialist
+            </span>
+          </div>
+          <div className="space-y-4">
+            <p className="text-xl leading-relaxed">
+              I&apos;m a Senior Data Engineer passionate about transforming
+              complex data into powerful, actionable insights.
+            </p>
+            <p className="text-xl leading-relaxed">
+              I architect and build powerful distributed systems and scalable
+              software solutions. My expertise spans complex backend
+              infrastructures and intuitive frontend experiences. Let&apos;s
+              connect and explore how my skills in data engineering and software
+              development can propel your next big project forward.
+            </p>
+          </div>
+          <button className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition-all duration-300 text-lg font-medium shadow-md hover:shadow-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
+            Contact Me
+          </button>
+        </div>
 
-          <h2 className="text-[20px] md:text-3xl lg:text-5xl m-0 my-3 font-semibold text-primary">
-            A Full-Stack Engineer
-          </h2>
-
-          <p className="text-md lg:text-lg">
-            I am a data-driven Software Engineer with a passion for delivering
-            results and learning hard things. With my expertise in React and
-            NextJS on the frontend, and TypeScript (tRPC) and Python
-            (FastAPI/Flask) on the backend, I bring a unique combination of
-            technical skills and creative problem-solving to every project I
-            work on.
-          </p>
-
-          <Button
-            variant="default"
-            className="text-md text-white font-bold text-md"
-            asChild
-          >
-            <a
-              className="decoration-0 outline-none no-underline"
-              href="mailto:contact@justinsmith.sh"
-            >
-              Get in touch
-              <SendIcon className="ml-2 w-4 h-4" />
-            </a>
-          </Button>
+        <div className="hidden lg:flex lg:w-1/2 justify-center items-center">
+          <div className="relative w-full max-w-md">
+            <Image
+              src="/headshot.png"
+              alt="Justin Smith headshot"
+              width={1715}
+              height={2196}
+              priority
+              className="w-full h-auto block dark:hidden"
+            />
+            <Image
+              src="/headshot-dark.png"
+              alt="Justin Smith headshot (dark mode)"
+              width={1715}
+              height={2196}
+              priority
+              className="w-full h-auto hidden dark:block"
+            />
+          </div>
         </div>
       </div>
     </section>
