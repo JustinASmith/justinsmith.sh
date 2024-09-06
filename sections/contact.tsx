@@ -12,9 +12,10 @@ const ContactSection: React.FC = () => {
           Let&apos;s <span className="text-primary">Connect</span>
         </h2>
         <p className="text-gray-600 dark:text-gray-300 mb-8 text-center">
-          I&apos;m open to new opportunities in data engineering and scalable
-          systems architecture. Whether you have a project idea or just want to
-          discuss tech, I&apos;d love to hear from you.
+          I&apos;m passionate about data engineering and software development,
+          always eager for new challenges. If you have exciting projects or
+          opportunities, let&apos;s connect and create something amazing
+          together!
         </p>
         <div className="flex justify-center">
           <a
