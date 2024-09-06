@@ -6,12 +6,12 @@ const ContactSection: React.FC = () => {
   const email = "contact" + "@" + "justinsmith.sh";
 
   return (
-    <section className="bg-gray-50 py-16" id="contact">
+    <section className="bg-gray-100 dark:bg-[#1f2d39] py-16" id="contact">
       <div className="container mx-auto px-4 max-w-2xl">
-        <h2 className="text-4xl font-bold text-center mb-8 text-gray-800">
+        <h2 className="text-4xl font-bold text-center mb-8 text-gray-800 dark:text-white">
           Let&apos;s <span className="text-primary">Connect</span>
         </h2>
-        <p className="text-gray-600 mb-8 text-center">
+        <p className="text-gray-600 dark:text-gray-300 mb-8 text-center">
           I&apos;m open to new opportunities in data engineering and scalable
           systems architecture. Whether you have a project idea or just want to
           discuss tech, I&apos;d love to hear from you.
