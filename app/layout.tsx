@@ -20,7 +20,7 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className="relative min-h-screen font-sans antialiased">
+      <body className="relative min-h-screen font-sans antialiased overflow-x-hidden">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <MainNavbar />
           <MobileNav />
