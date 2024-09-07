@@ -12,7 +12,7 @@ export default function BlogPosts() {
       className="py-20 bg-background text-gray-800 dark:text-white"
       id="blog"
     >
-      <div className="container mx-auto max-w-3xl px-4">
+      <div className="container mx-auto max-w-7xl px-4">
         <h2 className="text-4xl font-bold text-center mb-8">
           Latest from the <span className="text-primary">Blog</span>
         </h2>
