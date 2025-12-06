@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "preview": "next build && next start",
+    "dev": "contentlayer2 dev & next dev",
+    "build": "contentlayer2 build && next build",
+    "preview": "contentlayer2 build && next build && next start",
     "start": "next start",
     "lint": "next lint"
   },
