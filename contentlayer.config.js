@@ -1,7 +1,7 @@
 import { defineDocumentType, makeSource } from "contentlayer/source-files";
-import remarkUnwrapImages from "remark-unwrap-images";
 import remarkToc from "remark-toc";
 import rehypeSlug from "rehype-slug";
+import rehypeUnwrapImages from "rehype-unwrap-images";
 import rehypeShiki from "@shikijs/rehype";
 import {
   transformerNotationHighlight,
@@ -83,9 +83,10 @@ export default makeSource({
   contentDirPath: "./content",
   documentTypes: [Post, Page],
   mdx: {
-    remarkPlugins: [remarkUnwrapImages, [remarkToc, { tight: true }]],
+    remarkPlugins: [[remarkToc, { tight: true }]],
     rehypePlugins: [
       rehypeSlug,
+      rehypeUnwrapImages,
       [
         rehypeShiki,
         {
