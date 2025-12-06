@@ -1,4 +1,4 @@
-import { defineDocumentType, makeSource } from "contentlayer/source-files";
+import { defineDocumentType, makeSource } from "contentlayer2/source-files";
 import remarkToc from "remark-toc";
 import rehypeSlug from "rehype-slug";
 import rehypeUnwrapImages from "rehype-unwrap-images";
@@ -9,7 +9,7 @@ import {
   transformerNotationDiff,
 } from "@shikijs/transformers";
 
-/** @type {import('contentlayer/source-files').ComputedFields} */
+/** @type {import('contentlayer2/source-files').ComputedFields} */
 const computedFields = {
   slug: {
     type: "string",
@@ -59,25 +59,6 @@ export const Post = defineDocumentType(() => ({
   },
   computedFields,
 }));
-
-function rehypeCopyButton() {
-  return (tree) => {
-    visit(tree, "element", (node) => {
-      if (node.tagName === "pre" && node.children[0]?.tagName === "code") {
-        node.properties.className = (node.properties.className || []).concat(
-          "code-block"
-        );
-        const button = {
-          type: "element",
-          tagName: "button",
-          properties: { className: ["copy-button"] },
-          children: [{ type: "text", value: "Copy" }],
-        };
-        node.children.unshift(button);
-      }
-    });
-  };
-}
 
 export default makeSource({
   contentDirPath: "./content",
