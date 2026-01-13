@@ -1,70 +1,166 @@
+"use client";
+
 import React from "react";
-import Image from "next/image";
+import { motion } from "framer-motion";
+import { Spotlight } from "@/components/ui/spotlight";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
+import Link from "next/link";
 
 const Hero = () => {
   return (
-    <section className="relative py-24 px-4 sm:px-8 md:px-20 max-w-7xl mx-auto min-h-screen flex items-center">
-      <span
-        aria-hidden="true"
-        className="bg-text absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-12 text-gray-100 dark:text-[#21303c] text-9xl scale-150 tracking-wide font-bold select-none pointer-events-none text-center z-0 w-full"
-      >
-        PASSIONATE ENGINEER CREATIVE DATA-DRIVEN
-      </span>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+      {/* Spotlight effect */}
+      <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill="currentColor"
+      />
 
-      <div className="z-10 relative flex flex-col lg:flex-row items-center justify-between gap-8 w-full">
-        <div className="w-full lg:w-1/2 space-y-8">
-          <div className="space-y-4">
-            <span className="text-primary text-xl font-bold dark:text-carrigreen block">
-              Hi, my name is
-            </span>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight">
-              Justin Smith
-            </h1>
-            <span className="text-2xl md:text-3xl lg:text-4xl block text-primary dark:text-carrigreen font-semibold">
-              Engineer & Data Specialist
-            </span>
-          </div>
-          <div className="space-y-4">
-            <p className="text-xl leading-relaxed">
-              I&apos;m a Senior Data Engineer passionate about transforming
-              complex data into powerful, actionable insights.
-            </p>
-            <p className="text-xl leading-relaxed">
-              I architect and build powerful distributed systems and scalable
-              software solutions. My expertise spans complex backend
-              infrastructures and intuitive frontend experiences. Let&apos;s
-              connect and explore how my skills in data engineering and software
-              development can propel your next big project forward.
-            </p>
-          </div>
-          <a
-            href="#contact"
-            className="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary-dark transition-all duration-300 text-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+      {/* Grid background */}
+      <div className="absolute inset-0 bg-grid-black/[0.02] dark:bg-grid-white/[0.02]" />
+      <div className="absolute inset-0 bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+
+      {/* Gradient orbs */}
+      <div className="absolute top-1/4 -left-20 w-72 h-72 bg-purple-500/30 rounded-full blur-[100px] animate-pulse-slow" />
+      <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-blue-500/30 rounded-full blur-[100px] animate-pulse-slow" />
+
+      {/* Main content */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="flex flex-col items-center text-center">
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
           >
-            Contact Me
-          </a>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              Available for opportunities
+            </span>
+          </motion.div>
+
+          {/* Name */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4"
+          >
+            Hi, I&apos;m{" "}
+            <span className="text-gradient">Justin Smith</span>
+          </motion.h1>
+
+          {/* Role */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mb-6"
+          >
+            <h2 className="text-xl sm:text-2xl md:text-3xl text-muted-foreground font-medium">
+              Senior Data Engineer & Full-Stack Developer
+            </h2>
+          </motion.div>
+
+          {/* Description */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="max-w-2xl mb-8"
+          >
+            <TextGenerateEffect
+              words="I architect and build powerful distributed systems and scalable software solutions. Transforming complex data into actionable insights and crafting intuitive experiences."
+              className="text-lg text-muted-foreground font-normal"
+            />
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 mb-12"
+          >
+            <Button asChild size="lg" className="group">
+              <Link href="#contact">
+                Get in touch
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="#projects">View my work</Link>
+            </Button>
+          </motion.div>
+
+          {/* Social links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="flex items-center gap-4"
+          >
+            <Link
+              href="https://github.com/JustinASmith"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Github className="h-5 w-5" />
+              <span className="sr-only">GitHub</span>
+            </Link>
+            <Link
+              href="https://linkedin.com/in/JustinASmith"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-3 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Linkedin className="h-5 w-5" />
+              <span className="sr-only">LinkedIn</span>
+            </Link>
+            <Link
+              href="mailto:contact@justinsmith.sh"
+              className="p-3 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Mail className="h-5 w-5" />
+              <span className="sr-only">Email</span>
+            </Link>
+          </motion.div>
         </div>
 
-        <div className="hidden lg:flex lg:w-1/2 justify-center items-center">
-          <div className="relative w-full max-w-md">
-            <Image
-              src="/headshot.png"
-              alt="Justin Smith headshot"
-              width={1715}
-              height={2196}
-              priority
-              className="w-full h-auto block dark:hidden"
-            />
-            <Image
-              src="/headshot-dark.png"
-              alt="Justin Smith headshot (dark mode)"
-              width={1715}
-              height={2196}
-              priority
-              className="w-full h-auto hidden dark:block"
-            />
-          </div>
-        </div>
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="flex flex-col items-center gap-2 text-muted-foreground"
+          >
+            <span className="text-sm">Scroll down</span>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

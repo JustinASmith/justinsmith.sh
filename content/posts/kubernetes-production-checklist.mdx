@@ -1,0 +1,212 @@
+---
+title: Kubernetes Production Readiness Checklist
+description: Essential configurations and best practices for running production workloads on Kubernetes, from resource management to security hardening.
+date: "2024-03-10"
+---
+
+Moving to Kubernetes in production requires careful planning and configuration. Here's a comprehensive checklist I've developed from experience running production clusters.
+
+## Resource Management
+
+### Define Resource Requests and Limits
+
+Always specify resource requests and limits for your containers:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-server
+spec:
+  containers:
+  - name: api
+    image: myapp:v1.2.0
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+```
+
+### Horizontal Pod Autoscaler
+
+Configure autoscaling based on metrics:
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-server
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+## High Availability
+
+### Pod Disruption Budgets
+
+Ensure availability during voluntary disruptions:
+
+```yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: api-server
+```
+
+### Pod Anti-Affinity
+
+Spread pods across nodes:
+
+```yaml
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - api-server
+        topologyKey: kubernetes.io/hostname
+```
+
+## Security
+
+### Pod Security Standards
+
+Apply security contexts to pods:
+
+```yaml
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+  seccompProfile:
+    type: RuntimeDefault
+containers:
+- name: app
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+      - ALL
+```
+
+### Network Policies
+
+Restrict pod-to-pod communication:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: api-server
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+    ports:
+    - protocol: TCP
+      port: 8080
+```
+
+## Observability
+
+### Liveness and Readiness Probes
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+```
+
+### Logging Best Practices
+
+- Write logs to stdout/stderr
+- Use structured logging (JSON format)
+- Include correlation IDs for distributed tracing
+- Set appropriate log levels per environment
+
+## Configuration Management
+
+### External Configuration with ConfigMaps
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+data:
+  LOG_LEVEL: "info"
+  MAX_CONNECTIONS: "100"
+  CACHE_TTL: "300"
+```
+
+### Secrets Management
+
+Use a secrets management solution like:
+- HashiCorp Vault with CSI driver
+- AWS Secrets Manager
+- Azure Key Vault
+- External Secrets Operator
+
+## Checklist Summary
+
+Before going to production, verify:
+
+- [ ] Resource requests and limits defined
+- [ ] Horizontal Pod Autoscaler configured
+- [ ] Pod Disruption Budgets in place
+- [ ] Anti-affinity rules for high availability
+- [ ] Security contexts applied
+- [ ] Network policies defined
+- [ ] Health probes configured
+- [ ] Centralized logging set up
+- [ ] Secrets properly managed
+- [ ] Monitoring and alerting ready
+
+## Conclusion
+
+Kubernetes provides powerful primitives for running production workloads, but success requires attention to detail. Use this checklist as a starting point and adapt it to your specific requirements.

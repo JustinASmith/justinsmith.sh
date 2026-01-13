@@ -20,6 +20,7 @@ export default function NavbarHeader({
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [prevScroll, setPrevScroll] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   function update(latest: number, prev: number): void {
     if (latest < prev) {
@@ -27,6 +28,7 @@ export default function NavbarHeader({
     } else if (latest > 100 && latest > prev) {
       setHidden(true);
     }
+    setIsScrolled(latest > 50);
   }
 
   useMotionValueEvent(scrollY, "change", (latest: number) => {
@@ -44,14 +46,21 @@ export default function NavbarHeader({
         staggerChildren: 0.05,
       }}
       className={cn(
-        "sticky top-0 z-20 bg-background shadow-sm w-full",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        isScrolled
+          ? "bg-background/80 backdrop-blur-lg border-b border-border shadow-sm"
+          : "bg-transparent",
         className
       )}
     >
-      <nav className="container mx-auto px-6 py-3">
-        <div className="flex justify-between items-center ml-auto text-lg font-medium space-x-6">
-          <Link href="/" className="text-2xl">
-            JustinSmith<span className="text-primary">.sh</span>
+      <nav className="container mx-auto px-4 sm:px-6 py-4">
+        <div className="flex justify-between items-center">
+          <Link
+            href="/"
+            className="text-xl sm:text-2xl font-bold tracking-tight hover:text-primary transition-colors"
+          >
+            Justin<span className="text-primary">Smith</span>
+            <span className="text-muted-foreground">.sh</span>
           </Link>
           {children}
         </div>

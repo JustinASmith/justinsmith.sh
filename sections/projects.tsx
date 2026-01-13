@@ -1,18 +1,21 @@
 "use client";
 
-import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
-import { Github } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Github, ExternalLink, Star, Folder } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Project {
   title: string;
   description: string;
-  image: string;
+  image?: string;
   githubLink?: string;
   demoLink?: string;
   technologies: string[];
+  featured?: boolean;
 }
 
 interface ProjectWithStars extends Project {
@@ -32,10 +35,113 @@ async function fetchGitHubStars(url: string): Promise<number | null> {
   }
 }
 
+const ProjectCard = ({
+  project,
+  index,
+}: {
+  project: ProjectWithStars;
+  index: number;
+}) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      viewport={{ once: true }}
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:border-primary/50",
+        project.featured ? "md:col-span-2 md:row-span-2" : ""
+      )}
+    >
+      {/* Image */}
+      {project.image && (
+        <div className="relative h-48 md:h-64 overflow-hidden">
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+        </div>
+      )}
+
+      {/* Content */}
+      <div className={cn("p-6", project.image ? "-mt-12 relative z-10" : "")}>
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            {!project.image && (
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Folder className="h-5 w-5 text-primary" />
+              </div>
+            )}
+            <div>
+              <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                {project.title}
+              </h3>
+              {project.stars !== null && project.stars > 0 && (
+                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                  <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+                  <span>{project.stars}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Links */}
+          <div className="flex items-center gap-2">
+            {project.githubLink && (
+              <Link
+                href={project.githubLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full hover:bg-muted transition-colors"
+              >
+                <Github className="h-5 w-5" />
+                <span className="sr-only">GitHub</span>
+              </Link>
+            )}
+            {project.demoLink && (
+              <Link
+                href={project.demoLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full hover:bg-muted transition-colors"
+              >
+                <ExternalLink className="h-5 w-5" />
+                <span className="sr-only">Demo</span>
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Description */}
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+          {project.description}
+        </p>
+
+        {/* Technologies */}
+        <div className="flex flex-wrap gap-2">
+          {project.technologies.map((tech) => (
+            <span
+              key={tech}
+              className="text-xs px-2.5 py-1 rounded-full bg-muted font-medium"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Hover gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+    </motion.div>
+  );
+};
+
 export default function Projects() {
-  const [projectsWithStars, setProjectsWithStars] = useState<
-    ProjectWithStars[]
-  >([]);
+  const [projectsWithStars, setProjectsWithStars] = useState<ProjectWithStars[]>([]);
 
   useEffect(() => {
     const fetchStars = async () => {
@@ -53,93 +159,90 @@ export default function Projects() {
     fetchStars();
   }, []);
 
-  const displayProjects = () => {
-    return projectsWithStars.map((project) => (
-      <Link
-        key={project.title}
-        href={project.githubLink || project.demoLink || "#"}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block w-auto sm:w-[30rem]"
-      >
-        <CardContainer className="inter-var">
-          <CardBody className="relative group/card hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] bg-white dark:bg-[#1e2a3a] border-black/[0.1] dark:border-white/[0.2] w-full h-auto rounded-xl p-6 border">
-            <CardItem translateZ="100" className="w-full mb-4">
-              <Image
-                src={project.image}
-                height={1000}
-                width={1000}
-                className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl"
-                alt={`${project.title} thumbnail`}
-              />
-            </CardItem>
-            <div className="flex justify-between items-center mb-2">
-              <CardItem
-                translateZ="50"
-                className="text-xl font-bold text-neutral-800 dark:text-[#4ade80]"
-              >
-                {project.title}
-              </CardItem>
-              <CardItem
-                translateZ={20}
-                as="div"
-                className="flex items-center gap-2"
-              >
-                {project.stars !== null && (
-                  <span className="text-neutral-700 dark:text-white mr-2">
-                    {project.stars} ★
-                  </span>
-                )}
-                <Github className="w-5 h-5 text-neutral-700 dark:text-white" />
-              </CardItem>
-            </div>
-            <CardItem
-              as="p"
-              translateZ="60"
-              className="text-neutral-500 dark:text-neutral-300 text-sm mt-2 mb-4"
-            >
-              {project.description}
-            </CardItem>
-            <CardItem translateZ={20} as="div" className="flex flex-wrap gap-2">
-              {project.technologies.map((tech) => (
-                <span
-                  key={tech}
-                  className="bg-gray-100 text-gray-800 dark:bg-[#2d3b4d] dark:text-white text-sm px-2 py-1 rounded"
-                >
-                  {tech}
-                </span>
-              ))}
-            </CardItem>
-          </CardBody>
-        </CardContainer>
-      </Link>
-    ));
-  };
-
   return (
-    <div
-      className="py-20 bg-gray-100 dark:bg-[#1f2d39] text-gray-800 dark:text-white"
-      id="projects"
-    >
-      <h2 className="text-4xl font-bold text-center mb-8">
-        A Small Selection of{" "}
-        <span className="text-primary">Recent Projects</span>
-      </h2>
-      <div className="flex flex-wrap items-center justify-center p-4 gap-8">
-        {displayProjects()}
+    <section id="projects" className="py-20 px-4 bg-muted/30">
+      <div className="max-w-7xl mx-auto">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+            Featured <span className="text-gradient">Projects</span>
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            A selection of projects I&apos;ve worked on, from data pipelines to
+            full-stack applications.
+          </p>
+        </motion.div>
+
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projectsWithStars.map((project, index) => (
+            <ProjectCard key={project.title} project={project} index={index} />
+          ))}
+        </div>
+
+        {/* View More Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="text-center mt-12"
+        >
+          <Button asChild variant="outline" size="lg">
+            <Link
+              href="https://github.com/JustinASmith"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Github className="mr-2 h-4 w-4" />
+              View more on GitHub
+            </Link>
+          </Button>
+        </motion.div>
       </div>
-    </div>
+    </section>
   );
 }
 
-const projects = [
+const projects: Project[] = [
   {
-    title: "This Website",
+    title: "Personal Portfolio",
     description:
-      "This website is a portfolio of my work and a blog of my thoughts. Built with Next.js, TailwindCSS, and MDX. Deployed on Vercel.",
+      "This modern portfolio website built with Next.js, featuring a git-based CMS with MDX support, dark mode, and beautiful animations. Showcases my work and thoughts through blog posts.",
     image: "/projects/website.png",
     githubLink: "https://github.com/JustinASmith/justinsmith.sh",
     demoLink: "https://justinsmith.sh",
-    technologies: ["TypeScript", "React", "TailwindCSS", "Next.js", "MDX"],
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "MDX", "Vercel"],
+    featured: true,
   },
-] as Project[];
+  {
+    title: "Data Pipeline Framework",
+    description:
+      "A scalable data processing framework built with Python and Apache Kafka for handling high-throughput event streams and real-time analytics.",
+    technologies: ["Python", "Kafka", "PostgreSQL", "Docker", "AWS"],
+  },
+  {
+    title: "API Gateway Service",
+    description:
+      "Microservice architecture implementation with rate limiting, authentication, and request routing for distributed systems.",
+    technologies: ["Go", "Redis", "Kubernetes", "gRPC"],
+  },
+  {
+    title: "Real-time Dashboard",
+    description:
+      "Interactive dashboard for monitoring system metrics and KPIs with real-time updates and customizable visualizations.",
+    technologies: ["React", "D3.js", "WebSocket", "Node.js"],
+  },
+  {
+    title: "ML Model Serving",
+    description:
+      "Production-ready machine learning model serving infrastructure with A/B testing and model versioning capabilities.",
+    technologies: ["Python", "FastAPI", "Docker", "MLflow"],
+  },
+];
