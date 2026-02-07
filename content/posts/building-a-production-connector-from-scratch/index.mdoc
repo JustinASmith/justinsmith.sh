@@ -1,0 +1,212 @@
+---
+{"title":"Building a Production Data Connector from Scratch","description":"A practical walkthrough of building the RingCentral capture connector — from API exploration to production-ready backfills, snapshots, and incremental replication.","date":"2026-01-27","draft":false,"category":"software-engineering","tags":["python","connectors","async","ringcentral","tutorial","data-infrastructure"]}
+---
+
+Most tutorials about building API integrations stop at "make a request and parse the response." Real production connectors need to handle backfills, incremental replication, state management, rate limits, pagination edge cases, and graceful recovery. Here's how I built the RingCentral capture connector from scratch.
+
+## What We're Building
+
+A capture connector that:
+- **Backfills** all historical data from RingCentral's API
+- **Snapshots** periodically for resources without reliable change tracking
+- **Incrementally replicates** new data using cursors and timestamps
+- **Handles** rate limits, pagination, retries, and API quirks
+- **Checkpoints** state so it can resume after any failure
+
+All built on Estuary's Python CDK (Connector Development Kit).
+
+## Step 1: Define the Resource Schema
+
+Every connector starts with defining what streams (resources) you'll capture and their schemas:
+
+```python
+from estuary_cdk.capture.common import (
+    BaseDocument,
+    ResourceConfig,
+    ResourceState,
+)
+
+class CallLog(BaseDocument, extra="allow"):
+    id: str
+    sessionId: str | None = None
+    startTime: str
+    duration: int | None = None
+    type: str | None = None
+    direction: str | None = None
+    action: str | None = None
+    result: str | None = None
+    to: dict | None = None
+    from_: dict | None = None  # 'from' is a Python keyword
+
+class MessageStore(BaseDocument, extra="allow"):
+    id: str
+    conversationId: str | None = None
+    createdTime: str
+    direction: str | None = None
+    type: str | None = None
+    subject: str | None = None
+    readStatus: str | None = None
+```
+
+The `extra="allow"` on the Pydantic model is critical — APIs add new fields constantly, and you don't want your connector to break when RingCentral adds a `newField` to their response.
+
+## Step 2: Implement the API Client
+
+The API client handles authentication, rate limits, and pagination:
+
+```python
+class RingCentralAPI:
+    def __init__(self, credentials: OAuth2Credentials):
+        self._credentials = credentials
+        self._session: aiohttp.ClientSession | None = None
+        self._rate_limiter = asyncio.Semaphore(5)
+
+    async def _request(
+        self,
+        method: str,
+        path: str,
+        params: dict | None = None,
+    ) -> dict:
+        async with self._rate_limiter:
+            for attempt in range(MAX_RETRIES):
+                try:
+                    async with self._session.request(
+                        method,
+                        f"{BASE_URL}{path}",
+                        headers=await self._auth_headers(),
+                        params=params,
+                    ) as resp:
+                        if resp.status == 429:
+                            retry_after = int(
+                                resp.headers.get("Retry-After", "60")
+                            )
+                            await asyncio.sleep(retry_after)
+                            continue
+                        resp.raise_for_status()
+                        return await resp.json()
+                except aiohttp.ClientError as e:
+                    if attempt == MAX_RETRIES - 1:
+                        raise
+                    await asyncio.sleep(2 ** attempt)
+
+    async def list_call_logs(
+        self,
+        date_from: str | None = None,
+        page_token: str | None = None,
+    ) -> tuple[list[dict], str | None]:
+        params = {"perPage": 250, "view": "Detailed"}
+        if date_from:
+            params["dateFrom"] = date_from
+        if page_token:
+            params["page"] = page_token
+
+        data = await self._request("GET", "/restapi/v1.0/account/~/call-log", params)
+
+        records = data.get("records", [])
+        next_page = data.get("navigation", {}).get("nextPage", {}).get("uri")
+
+        return records, next_page
+```
+
+The retry logic with exponential backoff and rate limit awareness is non-negotiable in production. RingCentral will 429 you aggressively, and HTTP 500s happen.
+
+## Step 3: The Capture Loop
+
+This is where backfill, incremental, and snapshot modes come together:
+
+```python
+class RingCentralCaptureConnector(BaseCaptureConnector):
+    async def capture_stream(
+        self,
+        binding: CaptureBinding,
+        state: ResourceState,
+    ) -> AsyncGenerator[BaseDocument, None]:
+        if state.needs_backfill:
+            async for doc in self._backfill(binding, state):
+                yield doc
+            state.needs_backfill = False
+            state.backfill_completed_at = datetime.now(UTC)
+
+        # Incremental: fetch only new records since last cursor
+        cursor = state.cursor or state.backfill_completed_at.isoformat()
+
+        page_token = None
+        while True:
+            records, page_token = await self.api.list_call_logs(
+                date_from=cursor,
+                page_token=page_token,
+            )
+
+            for record in records:
+                doc = CallLog(**record)
+                yield doc
+                # Track the latest timestamp for next incremental run
+                if doc.startTime > cursor:
+                    cursor = doc.startTime
+
+            if not page_token:
+                break
+
+        state.cursor = cursor
+```
+
+## Step 4: Testing Against a Real API
+
+Don't just test against mocks. The connector needs to pass three validation tests against real API responses:
+
+1. **Backfill completeness** — Does it capture all historical records?
+2. **Snapshot accuracy** — Do periodic snapshots reflect the current state?
+3. **Incremental correctness** — After backfill, does it only capture new records?
+
+```bash
+# Run the connector against a development stack
+flowctl raw capture \
+  --source connectors/source-ringcentral/config.yaml \
+  --output /tmp/ringcentral-output \
+  --state /tmp/ringcentral-state.json
+
+# Verify document counts match API expectations
+jq -s 'length' /tmp/ringcentral-output/call-log.jsonl
+# Expected: matches RingCentral dashboard count
+```
+
+## Step 5: State Migration for Existing Captures
+
+When you ship breaking changes to an existing connector, you need to migrate state without losing progress. We built a CDK hook for this:
+
+```python
+async def migrate_state(
+    self,
+    bindings: list[CaptureBinding],
+) -> dict | None:
+    """Called during open phase before any processing.
+
+    Returns updated state dict, or None if no migration needed.
+    Checkpoints with merge_patch=False to replace full state.
+    """
+    current_version = self._state.get("version", 0)
+    if current_version >= CURRENT_STATE_VERSION:
+        return None
+
+    migrated = {}
+    for binding in bindings:
+        old_state = self._state.get(binding.resource_name, {})
+        migrated[binding.resource_name] = self._migrate_v0_to_v1(old_state)
+
+    migrated["version"] = CURRENT_STATE_VERSION
+    return migrated
+```
+
+This hook runs during the `open` phase before any data processing begins, preventing interleaved checkpoints from causing state conflicts.
+
+## Results
+
+The RingCentral connector shipped and was immediately used in production. All streams — Call Logs, Message Store, Meetings, Extensions, and more — confirmed working with backfills, snapshots, and incremental replication.
+
+The entire implementation took about a week from API exploration to merged PR.
+
+---
+
+**Want to build connectors yourself?** Estuary's CDK is open source and handles the hard parts (state management, checkpointing, flow control) so you can focus on the API logic. Check out the [connectors repo](https://github.com/estuary/connectors) or [Estuary's docs](https://docs.estuary.dev) to get started.
+
+**Have questions about building production data pipelines?** I'm always happy to chat — find me on [LinkedIn](https://www.linkedin.com/in/justin-a-smith662) or email [contact@justinsmith.sh](mailto:contact@justinsmith.sh).

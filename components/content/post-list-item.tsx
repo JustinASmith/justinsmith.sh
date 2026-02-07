@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { formatDate, getCategoryLabel } from "@/lib/keystatic";
+import { formatDate, getCategoryLabel } from "@/lib/content-utils";
 
 interface PostListItemProps {
   slug: string;

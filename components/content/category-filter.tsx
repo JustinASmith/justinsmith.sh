@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { getCategoryLabel } from "@/lib/keystatic";
+import { getCategoryLabel } from "@/lib/content-utils";
 
 const categories = [
   { value: "", label: "All" },

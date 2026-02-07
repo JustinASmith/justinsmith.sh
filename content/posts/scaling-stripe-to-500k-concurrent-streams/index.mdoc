@@ -1,0 +1,146 @@
+---
+{"title":"Scaling Stripe Data Capture to 500K Concurrent Streams","description":"How we built a connector that handles 6,500 Stripe Connected Accounts with 500,000+ concurrent streams — without losing a single event.","date":"2026-01-28","draft":false,"category":"software-engineering","tags":["python","stripe","connectors","async","data-infrastructure","scale"]}
+---
+
+When your Stripe integration goes from a handful of accounts to **6,500 Connected Accounts** producing **500,000+ concurrent streams**, the engineering challenges become fundamentally different. This is the story of how we solved it at Estuary.
+
+## The Problem
+
+Stripe's Connected Accounts model is powerful — a single platform can have thousands of sub-accounts, each with their own customers, payments, subscriptions, and events. When you need to capture change data from all of them in real-time, you hit several walls simultaneously:
+
+1. **API rate limits** per Connected Account and per platform
+2. **State management** across hundreds of thousands of streams
+3. **Cursor advancement** that can't miss events even during failures
+4. **Memory pressure** from tracking state for 500K+ streams
+
+The naive approach of "just poll each account" falls apart fast. Here's what we built instead.
+
+## Architecture: The Subtask Model
+
+Rather than treating each Connected Account as an independent connector, we built a subtask architecture where the parent connector orchestrates child tasks per account:
+
+```python
+class StripeCaptureConnector(BaseCaptureConnector):
+    async def capture(self, bindings: list[Binding]) -> None:
+        accounts = await self._list_connected_accounts()
+
+        # Partition accounts into batches for controlled concurrency
+        semaphore = asyncio.Semaphore(MAX_CONCURRENT_ACCOUNTS)
+
+        tasks = []
+        for account in accounts:
+            task = asyncio.create_task(
+                self._capture_account(account, bindings, semaphore)
+            )
+            tasks.append(task)
+
+        # Gather with exception handling per-account
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        self._handle_results(results)
+
+    async def _capture_account(
+        self,
+        account: str,
+        bindings: list[Binding],
+        semaphore: asyncio.Semaphore,
+    ) -> None:
+        async with semaphore:
+            for binding in bindings:
+                if binding.stream in CONNECTED_ACCOUNT_EXEMPT_STREAMS:
+                    continue
+                async for record in self._fetch_stream(account, binding):
+                    await self.emit(record)
+```
+
+The key insight: **not every stream needs per-account subtasks**. Streams like `Accounts` always query from the platform account regardless. We learned this the hard way when our first implementation spawned N redundant backfills for N connected accounts on the Accounts stream. For a customer with 7,500 connected accounts, that meant 7,500 duplicate backfills doing identical work.
+
+## Fixing Cursor Advancement
+
+One of the subtler bugs we encountered: the incremental cursor would get stuck when `capture_connected_accounts` was disabled. The cursor advancement logic incorrectly required a non-None `connected_account_id`:
+
+```python
+# Bug: cursor never advances when no connected accounts
+if cursor.connected_account_id is not None:
+    cursor.advance(latest_event_timestamp)
+
+# Fix: advance cursor regardless of connected account mode
+if record.is_incremental:
+    cursor.advance(latest_event_timestamp)
+```
+
+Without this fix, the connector would repeatedly fetch the same time window indefinitely. In production, this meant silently re-processing the same events forever while appearing healthy.
+
+## JSON Merge-Patch Checkpointing
+
+With 500K+ concurrent streams, the recovery log (checkpoints) was enormous. Each checkpoint stored the full state of every stream. We cut recovery log storage by **80%** by switching to JSON merge-patch checkpointing:
+
+```python
+# Before: full state checkpoint (huge payload)
+checkpoint = {
+    "streams": {stream_id: full_state for stream_id in all_streams}
+}
+
+# After: merge-patch checkpoint (only changes)
+def compute_merge_patch(
+    previous: dict,
+    current: dict,
+) -> dict:
+    patch = {}
+    for key, value in current.items():
+        if key not in previous or previous[key] != value:
+            patch[key] = value
+    for key in previous:
+        if key not in current:
+            patch[key] = None  # JSON merge-patch deletion
+    return patch
+
+checkpoint = compute_merge_patch(previous_state, current_state)
+```
+
+This meant that instead of writing 500K stream states on every checkpoint, we only wrote the streams that actually changed since the last checkpoint. During steady-state incremental capture, that's typically just a few hundred streams per checkpoint cycle.
+
+## Scheduled Backfills for Eventual Consistency
+
+Some Stripe resources aren't available via events — they can change without generating webhook events. For these, we implemented scheduled daily backfills:
+
+```python
+SCHEDULED_BACKFILL_STREAMS = {
+    "Accounts": timedelta(hours=24),
+    "Persons": timedelta(hours=24),
+    "ExternalAccountCards": timedelta(hours=24),
+    "ExternalBankAccounts": timedelta(hours=24),
+}
+
+async def maybe_run_scheduled_backfill(
+    self,
+    stream: str,
+    state: StreamState,
+) -> bool:
+    schedule = SCHEDULED_BACKFILL_STREAMS.get(stream)
+    if not schedule:
+        return False
+
+    if state.last_backfill and (
+        datetime.now(UTC) - state.last_backfill < schedule
+    ):
+        return False
+
+    await self._run_backfill(stream)
+    state.last_backfill = datetime.now(UTC)
+    return True
+```
+
+## Results
+
+After shipping these changes across several PRs:
+
+- **Zero data loss** across 6,500 Connected Accounts
+- **80% reduction** in recovery log storage costs
+- **Reliable cursor advancement** across all configurations
+- **No duplicate work** — exempt streams correctly skip per-account subtasks
+
+The connector now handles production workloads that would have been impossible six months earlier.
+
+---
+
+**Building real-time data pipelines?** Check out [Estuary Flow](https://estuary.dev) — it's what powers this connector and hundreds more. If you want to discuss scaling data capture systems, reach out on [LinkedIn](https://www.linkedin.com/in/justin-a-smith662).
