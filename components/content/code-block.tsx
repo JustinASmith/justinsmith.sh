@@ -1,4 +1,11 @@
-import { Highlight, themes } from "prism-react-renderer";
+import { Highlight, themes, Prism } from "prism-react-renderer";
+
+// Register additional languages not bundled by default
+(typeof globalThis !== "undefined" ? globalThis : window).Prism = Prism;
+require("prismjs/components/prism-java");
+require("prismjs/components/prism-sql");
+require("prismjs/components/prism-docker");
+require("prismjs/components/prism-toml");
 
 interface CodeBlockProps {
   content: string;
