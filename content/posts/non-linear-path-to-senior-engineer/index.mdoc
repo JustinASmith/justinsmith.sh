@@ -1,0 +1,115 @@
+---
+{"title":"The Non-Linear Path Into Engineering","description":"From first-generation college student to building production data infrastructure — why the winding road made me a better engineer.","date":"2026-01-25","draft":false,"category":"career","tags":["career","growth","first-gen","software-engineering","personal"]}
+---
+
+Not every engineer follows the straight line from CS degree to FAANG to staff title. I'm a first-generation college graduate who took a non-linear path into engineering — including dropping out and returning two years later. Here's what I learned along the way.
+
+## The Winding Road
+
+Nobody in my family had navigated the university system before, and there was no roadmap for "how to become a software engineer." When I first enrolled, I wasn't ready — so I dropped out.
+
+Those two years away weren't wasted. I worked, figured out what I actually wanted to build, and came back with a clarity that most 18-year-olds don't have. When I returned to Mississippi State University, I treated every class, project, and opportunity like it mattered — because I'd seen the alternative.
+
+I graduated with a B.S. in Software Engineering, a 3.68 GPA, Cum Laude, and Phi Theta Kappa honors. The non-linear path didn't hold me back academically — if anything, the time away made me a more intentional student.
+
+## Building at Camgian
+
+My first real engineering role was as a Senior Data Engineer at Camgian in Starkville, MS, where I spent nearly four years (Jun 2021 – Feb 2025) working on industrial data systems and edge computing. It wasn't a Silicon Valley startup or a big tech company. It was a team in Mississippi solving hard problems with real constraints — connectivity outages, ARM64 edge devices, and customers who needed zero data loss from 2,900+ industrial assets across 50+ global sites.
+
+That environment taught me things a larger company never would have:
+
+- **Ownership from day one** — I founded the company's first commercial IoT team, building Prefect ETL pipelines that processed 13–20M events/day from industrial lift trucks with S3 file drops and daily reports to operators and executives.
+- **Full-stack out of necessity** — I built everything from a fault-tolerant AVEVA PI Historian integration (circuit breaker patterns, FSM operating modes, parallel backfill + incremental capture) to a frontend monorepo with Turborepo, Next.js, tRPC, and Shadcn.
+- **Real customer impact** — I led the PoC that secured an **$8M U.S. Army contract** for an edge-based diagnostic platform, including an overnight crisis response to restore a bricked ARM64 device before a critical stakeholder demo.
+
+One of the more interesting scaling challenges was Kafka throughput. We increased it by **300%** via KRaft tuning and exactly-once semantics, powering TimescaleDB continuous aggregates for deduplication and ML feature pipelines across 230+ machines in four countries:
+
+```java
+// Kafka Streams topology for J1939 vehicle telemetry
+StreamsBuilder builder = new StreamsBuilder();
+
+KStream<String, J1939Event> telemetry = builder
+    .stream("j1939-raw", Consumed.with(stringSerde, j1939Serde))
+    .filter((key, event) -> event.isValid())
+    .selectKey((key, event) -> event.getAssetId());
+
+// Window aggregation for fleet analytics
+telemetry
+    .groupByKey()
+    .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(5)))
+    .aggregate(
+        FleetMetrics::new,
+        (key, event, metrics) -> metrics.update(event),
+        Materialized.with(stringSerde, metricsSerde)
+    )
+    .toStream()
+    .to("fleet-metrics-5m", Produced.with(windowedSerde, metricsSerde));
+```
+
+I also built operational monitoring with Prometheus and Grafana — cluster health, consumer lag, backpressure, throughput, and failure rates for proactive issue detection. And when the 2024 CrowdStrike outage hit, our systems maintained data consistency because we'd persisted ingest state to durable checkpoints — everything resumed automatically once infrastructure recovered.
+
+## Moving to Estuary
+
+In February 2025, I joined Estuary as a Software Engineer working on open-source connectors and the Connector Development Kit (CDK). The scale shift was significant — suddenly I was building Python connectors that coordinated **500K+ concurrent streams** across **6,500 accounts** with independent checkpoints and zero data loss.
+
+The transition from industrial edge systems to cloud-scale data capture had some surprises:
+
+```python
+# What I thought production async code looked like
+async def fetch_all_accounts():
+    tasks = [fetch_account(id) for id in account_ids]
+    return await asyncio.gather(*tasks)
+
+# What it actually looks like when you have 6,500 accounts
+async def fetch_all_accounts():
+    semaphore = asyncio.Semaphore(50)  # Don't melt the API
+    async def _bounded_fetch(account_id):
+        async with semaphore:
+            for attempt in range(MAX_RETRIES):
+                try:
+                    return await fetch_account(account_id)
+                except RateLimitError:
+                    await asyncio.sleep(2 ** attempt)
+                except Exception:
+                    if attempt == MAX_RETRIES - 1:
+                        raise
+                    await asyncio.sleep(1)
+    tasks = [_bounded_fetch(id) for id in account_ids]
+    return await asyncio.gather(*tasks, return_exceptions=True)
+```
+
+I engineered JSON merge-patch checkpointing that **reduced recovery log storage by 80%**, minimizing Mean Time To Recovery after interruptions. I also orchestrated zero-downtime connector migration for 25 enterprise clients, re-architecting legacy integrations to native async Python while preserving 100% data continuity.
+
+Now I'm also authoring an internal RFC for **AI-assisted development workflows** using Claude Code — defining best practices, custom skills, and tooling to accelerate team productivity.
+
+## What the Non-Linear Path Gives You
+
+Looking back, every detour added something:
+
+**Dropping out taught me urgency.** When you come back to school after seeing what life looks like without a degree, you don't waste time. Every project is an opportunity, not an obligation.
+
+**Small-company experience taught me breadth.** At Camgian, I couldn't specialize. I had to understand the full stack — from SCADA protocols and edge computing to Kafka Streams, REST APIs, and deployment pipelines. That breadth is exactly what makes an effective engineer — you can debug across boundaries.
+
+**Working on data infrastructure taught me depth.** Building connectors that handle 500K+ concurrent streams forced me to understand async programming, state management, and distributed systems at a level that no tutorial covers.
+
+## Advice for Engineers on a Non-Linear Path
+
+If your career doesn't look like the "standard" path, here's what I'd tell you:
+
+**1. Your background is an asset, not a liability.** First-gen engineers, career changers, and self-taught developers bring perspectives that homogeneous teams lack. The ability to explain complex systems in plain language — something you develop when nobody around you speaks "tech" — is incredibly valuable.
+
+**2. Small companies are underrated.** You'll learn more in four years at a company where you build the IoT team from scratch than at a company where your blast radius is a single microservice. The breadth of experience compounds.
+
+**3. Side projects matter.** This very website — [justinsmith.sh](https://justinsmith.sh) — is built with Next.js, Keystatic CMS, and deployed on Vercel. Building things outside of work keeps your skills sharp and demonstrates initiative.
+
+**4. Find your craft outside of code.** I play disc golf. It has nothing to do with software engineering, but the mental model — reading the terrain, managing risk, staying composed under pressure — translates directly. Having interests outside of tech makes you a more creative problem solver.
+
+## Where I Am Now
+
+Today I'm building open-source data infrastructure at Estuary, shipping connectors that power real-time data pipelines for companies that need every event captured without fail. The path here was anything but straight, and I wouldn't change it.
+
+The non-linear path isn't a detour. It's a different route to the same destination — and sometimes, a better one.
+
+---
+
+**Building your own non-linear career in engineering?** I'm always happy to connect and share what I've learned. Find me on [LinkedIn](https://www.linkedin.com/in/justin-a-smith662) or reach out at [contact@justinsmith.sh](mailto:contact@justinsmith.sh).

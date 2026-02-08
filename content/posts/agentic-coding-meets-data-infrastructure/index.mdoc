@@ -1,0 +1,213 @@
+---
+{"title":"Agentic Coding Meets Data Infrastructure","description":"How AI-assisted development is changing the way we build production connectors — from CDK hooks to Shopify bulk operations.","date":"2026-01-30","draft":false,"category":"agentic-coding","tags":["agentic-coding","ai","connectors","python","data-infrastructure","shopify"]}
+---
+
+There's a growing conversation about agentic coding — using AI assistants not just for autocomplete, but as genuine collaborators in building complex systems. At Estuary, I've been using tools like Claude Code daily while building production data connectors, and I'm currently authoring an internal RFC defining best practices, custom skills, and tooling for AI-assisted development workflows across the team. The results have reshaped how I think about software development.
+
+## The Connector Development Problem
+
+Building a production data connector means dealing with:
+
+- **API documentation that lies** — real responses rarely match the docs exactly
+- **Pagination schemes that vary** per endpoint (cursor-based, offset, page tokens, link headers)
+- **Rate limits** that change without notice
+- **State management** across backfills, snapshots, and incremental replication
+- **Edge cases** that only surface at scale (empty pages, deleted resources, schema changes mid-stream)
+
+Each connector is structurally similar but different in the details. That makes them an ideal candidate for AI-assisted development.
+
+## How Agentic Coding Accelerates Connector Development
+
+When I built the Shopify connector, the AI assistant helped me reason through one of the trickiest parts: Shopify's Bulk Operations API.
+
+Unlike most APIs where you paginate through results, Shopify's bulk operations work asynchronously. You submit a GraphQL query, poll for completion, then download a JSONL file:
+
+```python
+BULK_QUERY = """
+mutation {
+  bulkOperationRunQuery(
+    query: \"\"\"
+    {
+      orders(query: "updated_at:>='%s'") {
+        edges {
+          node {
+            id
+            name
+            createdAt
+            updatedAt
+            totalPriceSet { shopMoney { amount currencyCode } }
+            lineItems(first: 250) {
+              edges {
+                node {
+                  id
+                  title
+                  quantity
+                  variant { id title sku }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    \"\"\"
+  ) {
+    bulkOperation { id status }
+    userErrors { field message }
+  }
+}
+"""
+
+async def run_bulk_operation(
+    self,
+    shop: str,
+    query: str,
+    poll_interval: int = 5,
+) -> AsyncGenerator[dict, None]:
+    # Start the bulk operation
+    result = await self._graphql(shop, query)
+    operation_id = result["bulkOperationRunQuery"]["bulkOperation"]["id"]
+
+    # Poll until complete
+    while True:
+        status = await self._check_bulk_status(shop, operation_id)
+        if status["status"] == "COMPLETED":
+            break
+        if status["status"] in ("FAILED", "CANCELED"):
+            raise BulkOperationError(f"Operation {status['status']}")
+        await asyncio.sleep(poll_interval)
+
+    # Download and stream the JSONL results
+    download_url = status["url"]
+    async for line in self._stream_jsonl(download_url):
+        yield line
+```
+
+The parent-child relationship in Shopify's JSONL output is another layer of complexity. Line items reference their parent order by an `__parentId` field, and you need to reconstruct the hierarchy:
+
+```python
+def reassemble_bulk_results(
+    lines: list[dict],
+) -> list[dict]:
+    """Reassemble parent-child relationships from
+    Shopify's flat JSONL bulk output."""
+    parents = {}
+    children = defaultdict(list)
+
+    for line in lines:
+        parent_id = line.pop("__parentId", None)
+        if parent_id:
+            children[parent_id].append(line)
+        else:
+            parents[line["id"]] = line
+
+    for parent_id, parent in parents.items():
+        if parent_id in children:
+            parent["lineItems"] = children[parent_id]
+
+    return list(parents.values())
+```
+
+An AI assistant helped me identify this pattern from the Shopify docs, generate the initial implementation, and then iterate on edge cases — like what happens when a bulk operation returns zero results, or when the JSONL file is truncated.
+
+## CDK Hooks: Where Architecture Meets AI
+
+Estuary's Connector Development Kit (CDK) provides hooks that standardize connector behavior. When I was implementing state migration hooks for the Stripe connector, the AI assistant helped me think through the state machine:
+
+```python
+async def open(
+    self,
+    bindings: list[CaptureBinding],
+    open_type: OpenType,
+    state: dict,
+    catalog: CatalogSpec,
+) -> tuple[dict, OpenAck]:
+    """Open hook: runs before any capture processing.
+
+    Handles:
+    1. State version migration
+    2. Connected account discovery
+    3. Stream initialization
+    """
+    migrated_state = await self._maybe_migrate_state(
+        state, bindings
+    )
+    if migrated_state is not None:
+        # Checkpoint with merge_patch=False to replace
+        # full state atomically
+        await self.checkpoint(
+            migrated_state, merge_patch=False
+        )
+        state = migrated_state
+
+    accounts = await self._discover_connected_accounts()
+
+    return state, OpenAck(
+        bindings=[
+            self._build_binding_ack(b, accounts)
+            for b in bindings
+        ]
+    )
+```
+
+The key insight the AI helped surface: state migration **must** happen during `open`, before any capture processing begins. If you migrate state mid-capture, you risk interleaved checkpoints that mix old and new state formats — a bug that's nearly impossible to reproduce but catastrophic in production.
+
+## Multi-Store Connectors: Scaling with AI
+
+The Shopify connector also needed multi-store support — a single connector instance capturing data from multiple Shopify stores simultaneously. This is architecturally similar to Stripe's Connected Accounts pattern:
+
+```python
+class ShopifyMultiStoreConnector(BaseCaptureConnector):
+    async def capture(self, bindings: list[Binding]) -> None:
+        stores = self.config.stores
+
+        # Each store gets its own rate limiter
+        limiters = {
+            store.shop: asyncio.Semaphore(
+                store.max_concurrent or DEFAULT_CONCURRENCY
+            )
+            for store in stores
+        }
+
+        tasks = []
+        for store in stores:
+            for binding in bindings:
+                task = asyncio.create_task(
+                    self._capture_store_stream(
+                        store, binding, limiters[store.shop]
+                    )
+                )
+                tasks.append(task)
+
+        await asyncio.gather(*tasks, return_exceptions=True)
+```
+
+Using an AI assistant to scaffold this pattern — then manually verifying rate limit behavior, error propagation, and state isolation per store — cut the development time significantly while maintaining production quality.
+
+## What Makes Agentic Coding Work for Infrastructure
+
+Not all coding tasks benefit equally from AI assistance. Here's where I've found the most leverage in data infrastructure work:
+
+**High leverage:**
+- Generating initial implementations from API docs
+- Reasoning through state machines and edge cases
+- Writing test fixtures from real API responses
+- Identifying patterns across similar connectors
+
+**Still needs human judgment:**
+- Rate limit tuning for specific APIs
+- Checkpoint frequency and state size tradeoffs
+- Error handling strategy (retry vs. skip vs. fail)
+- Performance optimization at scale
+
+The best workflow I've found is using AI to generate the 80% scaffolding, then spending my time on the 20% that requires production experience and domain knowledge.
+
+## The Future
+
+As AI coding tools get better at understanding system-level context — not just individual files but entire architectures — I expect the scaffolding percentage to increase. The connector pattern is particularly well-suited: structurally repetitive, well-documented APIs, clear success criteria.
+
+But the engineering judgment — knowing when to retry vs. fail, how to structure state for recovery, when a race condition is theoretical vs. inevitable — that's where human expertise remains essential.
+
+---
+
+**Interested in building data connectors?** Estuary's CDK is open source and handles state management, checkpointing, and flow control. Check out the [connectors repo](https://github.com/estuary/connectors) to get started. Want to discuss agentic coding or data infrastructure? Connect with me on [LinkedIn](https://www.linkedin.com/in/justin-a-smith662).

@@ -1,0 +1,15 @@
+name: justinsmith.sh
+description: >-
+  My personal website and blog built with Next.js 16, Keystatic CMS, and
+  Tailwind CSS. A minimal, modern platform for writing about agentic coding and
+  software engineering.
+url: https://justinsmith.sh
+github: https://github.com/JustinASmith/justinsmith.sh
+techStack:
+  - Next.js
+  - TypeScript
+  - Tailwind CSS
+  - Keystatic
+  - Vercel
+featured: true
+sortOrder: 0
