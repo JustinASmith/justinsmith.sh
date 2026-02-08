@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Markdoc from "@markdoc/markdoc";
 import React from "react";
+import { markdocConfig } from "@/lib/markdoc-config";
+import { CodeBlock } from "@/components/content/code-block";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -104,8 +106,9 @@ export default async function BlogPostPage({
 
         <div className="mt-10 prose prose-neutral dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-code:font-mono prose-code:text-sm prose-pre:bg-card prose-pre:border prose-pre:border-border">
           {Markdoc.renderers.react(
-            Markdoc.transform(content.node),
-            React
+            Markdoc.transform(content.node, markdocConfig),
+            React,
+            { components: { CodeBlock } }
           )}
         </div>
 

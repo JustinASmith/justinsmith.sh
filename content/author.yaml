@@ -1,11 +1,16 @@
 name: Justin Smith
 bio: >-
-  Software engineer passionate about agentic coding, building thoughtful
-  software, and sharing what I learn along the way. I write about the
-  intersection of AI-assisted development, software engineering best practices,
-  and career growth in tech.
-shortBio: Software engineer writing about agentic coding and the future of software.
+  Fullstack engineer with experience across frontend, backend, and data pipeline
+  development. Currently building open-source integration SDKs and connectors at
+  scale at Estuary, with a track record of shipping production systems — from
+  edge computing and real-time streaming to fault-tolerant data pipelines
+  powering ML workflows. Previously led data infrastructure at Camgian,
+  including securing an $8M U.S. Army contract and processing 13–20M events/day
+  from 2,900+ industrial assets. Active adopter of AI tooling to accelerate
+  development workflows. B.S. Software Engineering from Mississippi State
+  University, Cum Laude.
+shortBio: Software engineer building open-source connectors and data pipelines at Estuary.
 role: Software Engineer
-company: Camgian
-companyUrl: https://www.camgian.com/
-location: Mississippi, USA
+company: Estuary
+companyUrl: https://estuary.dev
+location: Starkville, MS
