@@ -283,6 +283,9 @@ export type Milestone = {
   tone?: "win" | "unofficial" | "next";
 };
 
+/** "the 5th 1010 Classic", so a place and an event number don't run together. */
+const atEvent = (name: string) => (/^\d/.test(name) ? `the ${name}` : name);
+
 export const milestones: Milestone[] = (() => {
   const list: Milestone[] = [];
   const done = counted.filter((e) => !e.live || e.ratings !== "none");
@@ -324,7 +327,7 @@ export const milestones: Milestone[] = (() => {
   }
   const proCash = done.find((e) => isPro(e.division) && e.prize > 0);
   if (proCash?.place) {
-    list.push({ key: "pro-cash", date: proCash.start, title: "First pro cash", detail: `${ordinal(proCash.place)} at ${shortEventName(proCash.name)}` });
+    list.push({ key: "pro-cash", date: proCash.start, title: "First pro cash", detail: `${ordinal(proCash.place)} at ${atEvent(shortEventName(proCash.name))}` });
   }
   const dgpt = done.find((e) => /\bDGPT\b/.test(e.name));
   if (dgpt) list.push({ key: "dgpt", date: dgpt.start, title: "First DGPT event", detail: shortEventName(dgpt.name) });
@@ -339,7 +342,7 @@ export const milestones: Milestone[] = (() => {
       key: "first-1000",
       date: thousand.date,
       title: "First 1000-rated round",
-      detail: `${thousand.rating} at ${thousand.event}${thousand.official ? "" : " (unofficial)"}`,
+      detail: `${thousand.rating} at ${atEvent(thousand.event)}${thousand.official ? "" : " (unofficial)"}`,
       tone: thousand.official ? undefined : "unofficial",
     });
   }

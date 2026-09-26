@@ -88,26 +88,25 @@ export function RatingChart({ model: m, builtOn }: { model: ChartModel; builtOn:
       <figcaption className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
         <div>
           <p className="font-medium text-ink">Rating, round by round</p>
-          <ul
-            className={cn(
-              "mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.78rem] text-ink-2",
-              view === "table" && "hidden",
-            )}
-          >
-            <Key mark={<span className="h-0.5 w-4 rounded-full bg-viz-accent" />}>Official rating</Key>
-            {showProjection ? (
-              <Key
-                mark={
-                  <svg width="16" height="4" aria-hidden="true" className="overflow-visible">
-                    <line x1="1" y1="2" x2="15" y2="2" className="stroke-viz-accent" strokeWidth="2" strokeDasharray="3 3" />
-                  </svg>
-                }
-              >
-                Projected
-              </Key>
+          <ul className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[0.78rem] text-ink-2">
+            {view === "chart" ? (
+              <>
+                <Key mark={<span className="h-0.5 w-4 rounded-full bg-viz-accent" />}>Official rating</Key>
+                {showProjection ? (
+                  <Key
+                    mark={
+                      <svg width="16" height="4" aria-hidden="true" className="overflow-visible">
+                        <line x1="1" y1="2" x2="15" y2="2" className="stroke-viz-accent" strokeWidth="2" strokeDasharray="3 3" />
+                      </svg>
+                    }
+                  >
+                    Projected
+                  </Key>
+                ) : null}
+                <Key mark={<span className="size-2 rounded-full bg-viz-muted" />}>Round rating</Key>
+                {hasUnofficial ? <Key mark={<span className={cn("size-2 rounded-full", HOLLOW)} />}>Unofficial round</Key> : null}
+              </>
             ) : null}
-            <Key mark={<span className="size-2 rounded-full bg-viz-muted" />}>Round rating</Key>
-            {hasUnofficial ? <Key mark={<span className={cn("size-2 rounded-full", HOLLOW)} />}>Unofficial round</Key> : null}
             <Key mark={<WinMark />}>Win</Key>
             <Key mark={<PodiumMark />}>Podium</Key>
           </ul>
@@ -404,7 +403,7 @@ function WinMark({ centered }: { centered?: boolean }) {
 function Readout({ e }: { e: ChartEvent }) {
   const unofficial = e.ratings === "unofficial";
   const finish = e.dnf ? "DNF" : e.place ? ordinal(e.place) : "—";
-  const finishNote = [e.win ? "won it" : "place", e.cashed ? "cashed" : null, e.live ? "unofficial" : null]
+  const finishNote = [e.dnf ? null : "place", e.cashed ? "cashed" : null, e.live ? "unofficial" : null]
     .filter(Boolean)
     .join(" · ");
   const roundsNote = e.rounds.length
@@ -423,7 +422,7 @@ function Readout({ e }: { e: ChartEvent }) {
       </p>
       <p className="mt-1 text-[0.92rem] font-medium leading-snug text-ink">{e.name}</p>
       <dl className="mt-2.5 space-y-1.5 text-[0.8rem]">
-        <Stat label={finishNote} value={finish} />
+        <Stat label={finishNote} value={finish} mark={e.win ? <WinMark /> : e.podium ? <PodiumMark /> : null} />
         <Stat
           label={roundsNote}
           value={e.rounds.length ? e.rounds.join(" · ") : "—"}
@@ -443,11 +442,9 @@ function Stat({ label, value, mark }: { label: string; value: ReactNode; mark?: 
     <div className="flex items-baseline gap-2">
       <dt className="order-2 text-ink-3">{label}</dt>
       <dd className="order-1 flex shrink-0 items-center gap-1.5 whitespace-nowrap font-semibold tabular-nums text-ink">
-        {mark ? (
-          <span aria-hidden="true" className="grid w-3 place-items-center self-center">
-            {mark}
-          </span>
-        ) : null}
+        <span aria-hidden="true" className="relative grid size-4 shrink-0 place-items-center self-center">
+          {mark}
+        </span>
         {value}
       </dd>
     </div>
@@ -483,9 +480,14 @@ function Tables({ model: m, showProjection }: { model: ChartModel; showProjectio
                     {e.live ? <span className="ml-1.5 text-[0.75rem] text-ink-3">(unofficial)</span> : null}
                   </td>
                   <td className="py-2 pr-3 font-mono text-[0.75rem] text-ink-2">{e.division}</td>
-                  <td className="whitespace-nowrap py-2 pr-3 text-right">
-                    {e.dnf ? "DNF" : e.place ? ordinal(e.place) : "—"}
-                    {e.win ? <span className="ml-1.5 text-[0.75rem] text-accent-ink">win</span> : null}
+                  <td className="whitespace-nowrap py-2 pr-3">
+                    <span className="flex items-center justify-end gap-2">
+                      {e.dnf ? "DNF" : e.place ? ordinal(e.place) : "—"}
+                      <span aria-hidden="true" className="relative size-4 shrink-0">
+                        {e.win ? <WinMark /> : e.podium ? <PodiumMark /> : null}
+                      </span>
+                      {e.win ? <span className="sr-only">, a win</span> : null}
+                    </span>
                   </td>
                   <td className="whitespace-nowrap py-2 pr-3 text-right">
                     {e.rounds.length ? e.rounds.join(" · ") : "—"}
