@@ -8,7 +8,8 @@
     "preview": "contentlayer2 build && next build && next start",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "contentlayer2 build && tsc --noEmit"
+    "typecheck": "contentlayer2 build && tsc --noEmit",
+    "pdga:sync": "node scripts/pdga-sync.mjs"
   },
   "dependencies": {
     "@shikijs/rehype": "^3.19.0",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@shikijs/transformers": "^3.19.0",
+    "node-html-parser": "^9.0.4",
     "shiki": "^3.19.0"
   }
 }

@@ -22,6 +22,9 @@
     --gold: 196 139 38;
     --lake: 58 110 143;
     --shadow: 60 45 20;
+    /* Chart marks. Checked with the dataviz palette validator against --card in each mode. */
+    --viz-accent: 201 58 34;
+    --viz-muted: 143 136 122;
     color-scheme: light;
   }
 
@@ -40,6 +43,9 @@
     --gold: 227 176 75;
     --lake: 121 176 210;
     --shadow: 0 0 0;
+    /* The UI accent is too bright for chart marks on the dark card; this is the same hue, stepped down. */
+    --viz-accent: 235 88 56;
+    --viz-muted: 138 132 118;
     color-scheme: dark;
   }
 
@@ -213,6 +219,26 @@
   }
   to {
     background-position: 0 0;
+  }
+}
+
+/* Charts draw themselves left to right as they scroll in. The negative insets let dots and labels overhang. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .draw-in {
+      animation: draw-in linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 45%;
+    }
+  }
+}
+
+@keyframes draw-in {
+  from {
+    clip-path: inset(-3rem 100% -3rem -3rem);
+  }
+  to {
+    clip-path: inset(-3rem -3rem -3rem -3rem);
   }
 }
 

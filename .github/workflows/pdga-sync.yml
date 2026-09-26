@@ -1,0 +1,50 @@
+# Keeps data/pdga.json (the disc golf section) current: new results, unofficial round
+# ratings, and each month's official ratings update. It commits only when the data
+# changed, and that commit is what redeploys the site.
+name: Sync PDGA data
+
+on:
+  schedule:
+    # Every day at 12:17 UTC, early morning in Starkville.
+    - cron: "17 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdga-sync
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Waits 10 seconds between requests, as pdga.com's robots.txt asks.
+      - run: pnpm pdga:sync
+
+      - name: Commit changes
+        run: |
+          if git diff --quiet -- data/pdga.json; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/pdga.json
+          git commit -m "Sync PDGA data"
+          git pull --rebase
+          git push
