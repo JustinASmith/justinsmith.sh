@@ -169,7 +169,7 @@ export function Shell() {
         return out(HELP.map(([c, d]) => `${c.padEnd(16)} ${d}`).join("\n"));
       case "whoami":
         return out(
-          `Justin Smith, software engineer in ${site.locationShort}.\nBuilding Origin's core product. Previously Estuary and Camgian.\nAlways building something on the side.`,
+          `Justin Smith, software engineer in ${site.locationShort}.\nFounding FDE at Origin, focused on core product engineering. Previously Estuary and Camgian.\nAlways building something on the side.`,
         );
       case "ls":
         return out(
@@ -254,7 +254,7 @@ export function Shell() {
               <span className="text-[#FF8A6E]">guest</span>@<span className="text-[#FF8A6E]">justinsmith.sh</span>
               {"\n"}---------------------{"\n"}
               {[
-                ["role", "software engineer @ origin"],
+                ["role", "founding fde @ origin"],
                 ["location", `${site.locationShort} (CT)`],
                 ["uptime", "5+ years shipping"],
                 ["langs", "python, typescript, rust, sql"],

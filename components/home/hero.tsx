@@ -27,12 +27,12 @@ export function Hero() {
             always building something on the side.
           </p>
           <p className="mt-4 max-w-[34rem] text-[1.06rem] leading-relaxed text-ink-2">
-            Right now I&rsquo;m on the core product engineering team at{" "}
+            Right now I&rsquo;m a founding forward-deployed engineer at{" "}
             <a href={site.company.url} className="link" target="_blank" rel="noreferrer">
               Origin
             </a>
-            , helping companies see what their AI agents are actually doing. I joined as its founding forward-deployed
-            engineer. Before that, I kept real-time data flowing at Estuary and wrangled industrial sensor data at Camgian.
+            , focused on core product engineering: helping companies see what their AI agents are actually doing. Before
+            that, I kept real-time data flowing at Estuary and wrangled industrial sensor data at Camgian.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <a href={`mailto:${site.email}`} className="btn-primary">

@@ -79,11 +79,12 @@ export function Projects() {
               appointment painless.
             </p>
             <p className="mt-3 leading-relaxed text-ink-2">
-              I designed and built it with Astro, connected online scheduling through IntakeQ, and I keep it running. Next
-              up: a visual editor, so the team can update their own pages without calling me.
+              I designed and built it with Astro, connected online scheduling through IntakeQ, and I keep it running. Now
+              I&rsquo;m building a visual editor so the team can update their own pages, and refining and refreshing the
+              design along the way.
             </p>
             <ul className="mt-6 flex flex-wrap gap-1.5">
-              {["Astro", "IntakeQ scheduling", "Responsive", "Visual editor (in progress)"].map((t) => (
+              {["Astro", "IntakeQ scheduling", "Responsive", "Visual editor (in progress)", "Design refresh (in progress)"].map((t) => (
                 <li key={t} className="chip">
                   {t}
                 </li>

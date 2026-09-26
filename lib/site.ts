@@ -2,13 +2,13 @@ export const site = {
   name: "Justin Smith",
   url: "https://justinsmith.sh",
   email: "contact@justinsmith.sh",
-  role: "Software Engineer",
+  role: "Founding Forward Deployed Engineer",
   company: { name: "Origin", url: "https://www.originhq.com" },
   location: "Starkville, Mississippi",
   locationShort: "Starkville, MS",
   timeZone: "America/Chicago",
   description:
-    "Software engineer in Starkville, Mississippi, building Origin's core product. I build data-heavy software, from the pipelines underneath to the interfaces people use, and I'm always building something on the side.",
+    "Software engineer in Starkville, Mississippi. Founding forward-deployed engineer at Origin, focused on core product engineering. I build data-heavy software, and I'm always building something on the side.",
   links: {
     github: "https://github.com/JustinASmith",
     /** Set to the full profile URL (e.g. "https://x.com/handle") to show X links across the site. */
