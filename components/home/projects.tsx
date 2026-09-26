@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { site } from "@/lib/site";
 import { SectionHeading } from "@/components/section-heading";
 import { ArrowUpRight } from "@/components/icons";
+import { Workbench } from "./workbench";
 import somDesktop from "@/public/work/state-of-mind-desktop.jpg";
 import somMobile from "@/public/work/state-of-mind-mobile.jpg";
 
@@ -34,7 +35,7 @@ const cards: Card[] = [
   {
     kicker: "Personal · 2026",
     title: "justinsmith.sh",
-    body: "The site you're on. Next.js, Tailwind, and MDX, plus a hand-built trace viewer, a fishing pond, and a tiny shell. Press / to try it.",
+    body: "The site you're on. Next.js, Tailwind, and MDX, plus a hand-built trace viewer, a putting game, and a tiny shell. Press / to try it.",
     tags: ["Next.js", "TypeScript", "Tailwind"],
     link: { href: site.links.source, label: "View the source" },
     art: <ShellArt />,
@@ -49,18 +50,25 @@ export function Projects() {
           id="projects-title"
           index="03"
           label="Projects"
-          aside="Selected"
+          aside="Now & shipped"
           title={
             <>
-              Built for real people, <em>out in the world</em>.
+              Always <em>building</em> something.
             </>
           }
         >
-          A few things I&rsquo;ve made lately, from a local practice&rsquo;s website to the plumbing behind half a million
-          data streams.
+          Client work, product ideas for disc golf, experiments with new AI tools, and building in public on X. Here&rsquo;s
+          what&rsquo;s on the bench right now, and a few things that have shipped.
         </SectionHeading>
 
-        <article className="card-surface reveal mt-16 grid overflow-hidden lg:grid-cols-[1fr_1.2fr]">
+        <Workbench />
+
+        <div className="reveal mt-24 flex items-center gap-3">
+          <p className="eyebrow">Recently shipped</p>
+          <span aria-hidden="true" className="h-px flex-1 bg-rule" />
+        </div>
+
+        <article className="card-surface reveal mt-6 grid overflow-hidden lg:grid-cols-[1fr_1.2fr]">
           <div className="flex flex-col p-7 sm:p-10">
             <p className="eyebrow">Client work · Starkville, MS</p>
             <h3 className="mt-4 font-display text-[clamp(2rem,4vw,2.8rem)] leading-[1.02] tracking-[-0.025em] font-soft">
@@ -218,10 +226,10 @@ function ShellArt() {
       <circle cx="91" cy="33" r="3" className="fill-white/20" />
       <circle cx="102" cy="33" r="3" className="fill-white/20" />
       <text x="80" y="66" className="fill-[#7FC2A6] font-mono" style={{ fontSize: 12 }}>
-        guest:~$ <tspan className="fill-[#ECE5D6]">fish</tspan>
+        guest:~$ <tspan className="fill-[#ECE5D6]">putt</tspan>
       </text>
       <text x="80" y="86" className="fill-[#D8D0BF] font-mono" style={{ fontSize: 12 }}>
-        casting… 🎣
+        chains! 🥏
       </text>
       <rect x="80" y="96" width="7" height="13" className="fill-[#FF6B4A]" />
       <circle cx="232" cy="98" r="14" className="fill-accent" />

@@ -47,7 +47,7 @@ export function SunPortrait() {
           </defs>
           <circle cx="60" cy="60" r="58" style={{ fill: "rgb(var(--card))", stroke: "rgb(var(--rule))" }} />
           <text className="fill-ink font-mono" style={{ fontSize: "9.6px", letterSpacing: "0.2em" }}>
-            <textPath href="#badge-circle">FORWARD DEPLOYED · STARKVILLE, MS · </textPath>
+            <textPath href="#badge-circle">ALWAYS BUILDING · STARKVILLE, MS · </textPath>
           </text>
         </svg>
         <span className="absolute inset-0 grid place-items-center">

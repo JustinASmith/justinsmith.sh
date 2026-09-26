@@ -4,7 +4,7 @@
 
 /*
  * Palette: warm paper + ink by day, a pine-dark lake by night.
- * Accent is "bobber red"; pine, gold and lake colour the trace lanes.
+ * Accent is "sunset red"; pine, gold and lake colour the trace lanes.
  */
 @layer base {
   :root {
@@ -216,80 +216,26 @@
   }
 }
 
-/* The fishing pond */
-@media (prefers-reduced-motion: no-preference) {
-  .pond-waves {
-    animation: pond-drift 6s ease-in-out infinite alternate;
-  }
+/* The putting green: chains swing when a putt drops. */
+.chains-rattle {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: chains-rattle 0.7s ease-out;
 }
 
-@keyframes pond-drift {
-  from {
-    transform: translateX(-14px);
-  }
-  to {
-    transform: translateX(14px);
-  }
-}
-
-@keyframes plop {
-  0% {
-    transform: translate(-150px, -110px) rotate(-40deg);
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  50% {
-    transform: translate(-60px, -130px) rotate(-10deg);
-  }
-  85% {
-    transform: translate(0, 8px) rotate(6deg);
-  }
-  100% {
-    transform: translate(0, 0) rotate(0);
-  }
-}
-
-@keyframes dip {
+@keyframes chains-rattle {
   0%,
   100% {
-    transform: translateY(0);
+    transform: skewX(0);
   }
-  30% {
-    transform: translateY(10px) rotate(-6deg);
+  20% {
+    transform: skewX(-8deg);
   }
-  60% {
-    transform: translateY(4px) rotate(5deg);
+  45% {
+    transform: skewX(6deg);
   }
-}
-
-@keyframes leap {
-  0% {
-    transform: translateY(70px) rotate(-25deg);
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
-  }
-  60% {
-    transform: translateY(-16px) rotate(10deg);
-  }
-  100% {
-    transform: translateY(0) rotate(0);
-  }
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-2px) rotate(-1deg);
-  }
-  75% {
-    transform: translateX(2px) rotate(1deg);
+  70% {
+    transform: skewX(-3deg);
   }
 }
 

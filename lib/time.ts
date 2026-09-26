@@ -37,19 +37,19 @@ const at = (h: number, m = 0) => h * 60 + m;
 const weekday: Slot[] = [
   { until: at(6), text: "Asleep, probably. Unless something's on fire." },
   { until: at(8), text: "Coffee, inbox, and a walk with Scout." },
-  { until: at(12), text: "Heads-down on a customer problem at Origin." },
-  { until: at(13), text: "Out to lunch. Back in a few." },
-  { until: at(17, 30), text: "Shipping something for an Origin customer." },
-  { until: at(20), text: "Off the clock. Maybe a quick nine on the disc golf course." },
-  { until: at(22, 30), text: "Winding down, or tinkering with a side project." },
+  { until: at(12), text: "Heads-down on Origin's core product. Scout is supervising." },
+  { until: at(13), text: "Lunch break. Scout wants to play." },
+  { until: at(17, 30), text: "Building something at Origin." },
+  { until: at(20), text: "Off the clock. Probably out throwing discs." },
+  { until: at(22, 30), text: "Hanging out with my wife, or tinkering with a side project." },
   { until: at(24), text: "Asleep, probably." },
 ];
 
 const weekend: Slot[] = [
   { until: at(6, 30), text: "Asleep, probably." },
-  { until: at(11), text: "Out on the water, chasing bass." },
-  { until: at(17), text: "Throwing discs or knee-deep in a house project." },
-  { until: at(22), text: "Off the clock with family." },
+  { until: at(12), text: "On a disc golf course somewhere. Maybe a tournament." },
+  { until: at(17), text: "Throwing discs, or knee-deep in a DIY project." },
+  { until: at(22), text: "Off the clock with my wife and Scout." },
   { until: at(24), text: "Asleep, probably." },
 ];
 

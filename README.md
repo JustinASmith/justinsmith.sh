@@ -1,6 +1,6 @@
 # justinsmith.sh
 
-My personal site: a warm "field notes" look with a few moving parts. It has a career timeline drawn like an observability trace, a live "right now in Starkville" status, a fishing pond that reels in fun facts, and a tiny shell (press <kbd>/</kbd>).
+My personal site: a warm "field notes" look with a few moving parts. It has a career timeline drawn like an observability trace, a live "right now in Starkville" status, a disc golf putting game that reveals fun facts, and a tiny shell (press <kbd>/</kbd>).
 
 Built with Next.js (App Router), Tailwind CSS, and MDX via Contentlayer. Deployed on Vercel.
 
@@ -20,10 +20,11 @@ Most of the words live in plain data files, so you rarely need to touch componen
 
 | What | Where |
 | --- | --- |
-| Name, email, links, time zone | `lib/site.ts` |
-| Career trace spans, stats, tackle box | `lib/career.ts` |
+| Name, email, links (set `links.x` to show X everywhere), time zone | `lib/site.ts` |
+| Career trace spans and stats | `lib/career.ts` |
+| "On the workbench" board | `lib/now.ts` |
 | "Right now in Starkville" guesses | `lib/time.ts` |
-| Photos, captions, interests, pond facts | `lib/life.ts` |
+| Photos, captions, off-hours list, Scout, putting-game facts | `lib/life.ts` |
 | Projects | `components/home/projects.tsx` |
 | Pages (e.g. `/colophon`) | `content/pages/*.mdx` |
 | Notes (blog posts) | `content/notes/*.mdx` |

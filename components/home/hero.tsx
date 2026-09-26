@@ -23,16 +23,16 @@ export function Hero() {
             Hey, I&rsquo;m <span className="italic text-accent font-wonk">Justin</span>.
           </h1>
           <p className="mt-9 max-w-[34rem] text-[1.28rem] leading-relaxed text-ink sm:text-[1.36rem]">
-            I build data-heavy software and the integrations that hold it together, usually shoulder to shoulder with
-            the customers who depend on it.
+            I build data-heavy software, from the pipelines underneath to the interfaces people use. And I&rsquo;m almost
+            always building something on the side.
           </p>
           <p className="mt-4 max-w-[34rem] text-[1.06rem] leading-relaxed text-ink-2">
-            Right now I&rsquo;m a founding forward-deployed engineer at{" "}
+            Right now I&rsquo;m on the core product engineering team at{" "}
             <a href={site.company.url} className="link" target="_blank" rel="noreferrer">
               Origin
             </a>
-            , helping companies see what their AI agents are actually doing. Before that I kept real-time data flowing at
-            Estuary and wrangled industrial sensor data at Camgian.
+            , helping companies see what their AI agents are actually doing. I joined as its founding forward-deployed
+            engineer. Before that, I kept real-time data flowing at Estuary and wrangled industrial sensor data at Camgian.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-3">
             <a href={`mailto:${site.email}`} className="btn-primary">

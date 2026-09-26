@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ringCowbell } from "@/lib/cowbell";
+import { ringCowbell } from "@/lib/sfx";
 import { Cowbell } from "./icons";
 import { cn } from "@/lib/utils";
 

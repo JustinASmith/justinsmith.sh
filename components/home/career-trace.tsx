@@ -121,8 +121,8 @@ export function CareerTrace({ builtAt }: { builtAt: string }) {
         <span>
           status <span className="text-pine">OK</span>
         </span>
-        <span className="ml-auto hidden md:inline" title="d15c601f, ba55. You're welcome.">
-          trace_id d15c601f-ba55
+        <span className="ml-auto hidden md:inline" title="Hexspeak for disc golf and code.">
+          trace_id d15c601f-c0de
         </span>
       </div>
 
@@ -151,7 +151,8 @@ export function CareerTrace({ builtAt }: { builtAt: string }) {
             const left = pos(toMonths(s.start));
             const width = Math.max(1.2, pos(endOf(s)) - left);
             const open = !s.end;
-            const live = open && s.depth > 0;
+            // Only the open leaf gets the "live" treatment; its open parent stays solid.
+            const live = open && s.depth > 0 && !guides[i].hasChildren;
             const nearEnd = left + width > 82;
             const isSelected = s.id === selected;
             return (

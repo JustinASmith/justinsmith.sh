@@ -10,6 +10,7 @@ const attributes: [string, string][] = [
   ["breed", "springer spaniel"],
   ["born", scout.born],
   ["drive_home", "3.5 hours"],
+  ["role", "coworker (wfh)"],
   ["status", "good boy"],
 ];
 
@@ -43,7 +44,7 @@ export function ScoutCard() {
       </div>
 
       <div className="order-1 flex flex-col justify-center p-7 sm:p-10 lg:order-2">
-        <p className="eyebrow">Resident good boy</p>
+        <p className="eyebrow">Best buddy, full-time coworker</p>
         <h3
           id="scout-title"
           className="mt-4 font-display text-[clamp(2.2rem,4.5vw,3.2rem)] leading-[0.98] tracking-[-0.03em] font-soft"
@@ -51,8 +52,9 @@ export function ScoutCard() {
           Meet <span className="italic text-accent font-wonk">Scout</span>.
         </h3>
         <p className="mt-5 text-[1.08rem] leading-relaxed text-ink-2">
-          Our Springer Spaniel, born September 1, 2024. We drove three and a half hours to bring him home, and yes, I had
-          to convince my wife first. He&rsquo;s been worth every mile.
+          Scout is my best buddy. I work from home, so he&rsquo;s my coworker too: we play, learn, and keep each other
+          company. He was born September 1, 2024, and we drove three and a half hours to bring him home. (Yes, I had to
+          convince my wife first.) He&rsquo;s been worth every mile.
         </p>
         <dl className="mt-7 divide-y divide-rule/70 rounded-xl border border-rule/80 bg-paper/60 font-mono text-[0.76rem]">
           {attributes.map(([k, v]) => (

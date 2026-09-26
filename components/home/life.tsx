@@ -1,15 +1,15 @@
 import Image from "next/image";
-import { interests, photos, type Interest } from "@/lib/life";
+import { offHours, photos, type OffHours } from "@/lib/life";
 import { SectionHeading } from "@/components/section-heading";
-import { DiscGolf, Fish, Paw, Roller } from "@/components/icons";
+import { DiscGolf, Heart, Paw, Roller } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { FishingPond } from "./fishing-pond";
+import { PuttingGame } from "./putting-game";
 import { ScoutCard } from "./scout-card";
 
-const interestIcon: Record<Interest["id"], typeof Fish> = { disc: DiscGolf, fish: Fish, dog: Paw, home: Roller };
-const interestTint: Record<Interest["id"], string> = {
+const icon: Record<OffHours["id"], typeof Heart> = { disc: DiscGolf, wife: Heart, dog: Paw, home: Roller };
+const tint: Record<OffHours["id"], string> = {
   disc: "bg-accent/10 text-accent-ink",
-  fish: "bg-lake/15 text-lake",
+  wife: "bg-accent/10 text-accent-ink",
   dog: "bg-gold/20 text-ink",
   home: "bg-pine/15 text-pine",
 };
@@ -28,7 +28,7 @@ export function Life() {
           aside="Off the clock"
           title={
             <>
-              Off the clock, you&rsquo;ll usually <em>find me outside</em>.
+              Off the clock: disc golf, DIY, and <em>my two best friends</em>.
             </>
           }
         >
@@ -39,10 +39,10 @@ export function Life() {
 
         <div className="mt-16 grid gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="reveal lg:col-span-5">
-            <p className="eyebrow">A field guide to my weekends</p>
+            <p className="eyebrow">Where my time goes</p>
             <ul className="mt-5 divide-y divide-rule/80 border-y border-rule/80">
-              {interests.map((it) => {
-                const Icon = interestIcon[it.id];
+              {offHours.map((it) => {
+                const Icon = icon[it.id];
                 return (
                   <li key={it.id} className="flex gap-4 py-5">
                     {it.avatar ? (
@@ -54,21 +54,21 @@ export function Life() {
                         className="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-gold/40"
                       />
                     ) : (
-                      <span className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-full", interestTint[it.id])}>
+                      <span className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-full", tint[it.id])}>
                         <Icon size={22} />
                       </span>
                     )}
                     <div>
                       <p className="font-display text-[1.3rem] leading-tight font-soft">{it.name}</p>
                       <p className="mt-1 text-ink-2">{it.note}</p>
-                      <p className="mt-1.5 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-3">{it.detail}</p>
+                      <p className="mt-1.5 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-3">{it.meta}</p>
                     </div>
                   </li>
                 );
               })}
             </ul>
           </div>
-          <FishingPond className="reveal lg:col-span-7 lg:self-start" />
+          <PuttingGame className="reveal lg:col-span-7 lg:self-start" />
         </div>
 
         <ScoutCard />

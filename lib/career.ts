@@ -33,12 +33,12 @@ export const career: Span[] = [
     depth: 0,
     lane: "root",
     summary:
-      "Five-plus years building data-intensive products and customer integrations across Python, TypeScript/React, Rust, SQL, and real-time data systems. I like owning the ambiguous work: discovery, fast prototypes, the production rollout, the observability, and the iteration with the people who actually use the thing.",
+      "Five-plus years building data-intensive products across Python, TypeScript/React, Rust, SQL, and real-time data systems. I like owning a problem end to end: the design, the prototype, the production rollout, and the observability that proves it works.",
     highlights: [
-      "Turning fuzzy customer problems into shipped, observable software",
+      "Turning fuzzy problems into shipped, observable software",
       "Streaming and real-time data: Kafka, CDC, ClickHouse, Postgres",
       "Product work end to end: React and Next.js front ends on async Python and Rust services",
-      "Production incident response alongside enterprise customers",
+      "Building with AI in the loop: agents, MCP, and LLM-powered features",
     ],
     attributes: [
       ["experience", "5+ years"],
@@ -191,7 +191,7 @@ export const career: Span[] = [
   {
     id: "origin",
     name: "origin",
-    title: "Founding Forward Deployed Engineer",
+    title: "Forward Deployed → Core Product Engineering",
     org: "Origin",
     orgUrl: "https://www.originhq.com",
     start: "2026-03",
@@ -199,22 +199,59 @@ export const career: Span[] = [
     depth: 1,
     lane: "accent",
     summary:
-      "Origin gives companies eyes on what their AI agents are actually doing across their machines: every request, tool call, and file change. As a founding FDE I sit between our customers and our codebase, owning discovery, prototypes, production rollouts, and the dashboards people actually read.",
+      "Origin gives companies eyes on what their AI agents are actually doing across their machines: every request, tool call, and file change. I joined as its founding forward-deployed engineer, and now I'm back on the engineering team, building the core product.",
     highlights: [
-      "Built Origin's first automated customer-intelligence brief for 15 customers, combining agent telemetry and traces, Slack context, Python/MCP analytics, and LLM analysis into daily Slack, PDF, and interactive reports for Sales, GTM, FDE, and Engineering",
-      "Shipped custom-provider support for any OpenAI-compatible endpoint in dashboard chat, from discovery through rollout, for a customer's PHI-sensitive Azure GPT service, plus an entitlement-gated managed path backed by a KMS-protected OpenRouter key",
-      "Built in-product bug reporting that files to Linear and gathers logs and telemetry from the Origin agent on the affected endpoint, with role-gated artifacts streamed from private S3 through a Google OAuth/RBAC-protected Rust tailnet service",
-      "Expanded the analytics graph for cost attribution by model, provider, tool, effort, organization, and user, then redesigned the customer-facing token-spend dashboard (it replaced a customer's R&D Grafana board)",
       "Cut peak memory 95%, bytes read 89%, and runtime 72% on planner-generated ClickHouse queries; moved endpoint-inventory filtering from per-row JSON scans to server-side Rust queries",
+      "Expanded the analytics graph for cost attribution by model, provider, tool, effort, organization, and user, then redesigned the token-spend dashboard (it replaced a customer's R&D Grafana board)",
+      "Built in-product bug reporting that files to Linear and gathers logs and telemetry from the Origin agent on the affected endpoint, with role-gated artifacts streamed from private S3 through a Google OAuth/RBAC-protected Rust tailnet service",
+      "Shipped custom-provider support for any OpenAI-compatible endpoint in dashboard chat, plus an entitlement-gated managed path backed by a KMS-protected OpenRouter key",
+      "Built Origin's first automated customer-intelligence brief, combining agent telemetry and traces, Slack context, Python/MCP analytics, and LLM analysis into daily Slack, PDF, and interactive reports",
     ],
     attributes: [
-      ["customers.daily_brief", "15"],
       ["clickhouse.peak_memory", "−95%"],
       ["clickhouse.bytes_read", "−89%"],
       ["clickhouse.runtime", "−72%"],
+      ["focus", "core product"],
+    ],
+    stack: ["Rust", "TypeScript", "React", "Python", "ClickHouse", "MCP", "OpenTelemetry", "AWS", "LLMs"],
+  },
+  {
+    id: "origin-fde",
+    name: "forward-deployed",
+    title: "Founding Forward Deployed Engineer",
+    org: "Origin",
+    orgUrl: "https://www.originhq.com",
+    start: "2026-03",
+    end: "2026-09",
+    location: "Remote",
+    depth: 2,
+    lane: "accent",
+    summary: "Joined as Origin's first forward-deployed engineer, shipping features from discovery through production rollout.",
+    highlights: [],
+    attributes: [
+      ["parent", "origin"],
+      ["customers.daily_brief", "15"],
+    ],
+    stack: [],
+  },
+  {
+    id: "origin-core",
+    name: "core-product",
+    title: "Core Product Engineering",
+    org: "Origin",
+    orgUrl: "https://www.originhq.com",
+    start: "2026-09",
+    location: "Remote",
+    depth: 2,
+    lane: "accent",
+    summary: "Back on the engineering team, focused on Origin's core product.",
+    highlights: [],
+    attributes: [
+      ["parent", "origin"],
+      ["team", "engineering"],
       ["status", "in progress"],
     ],
-    stack: ["Python", "TypeScript", "React", "Rust", "ClickHouse", "MCP", "OpenTelemetry", "AWS", "LLMs"],
+    stack: [],
   },
 ];
 
@@ -223,13 +260,4 @@ export const stats = [
   { value: "500K+", label: "concurrent streams kept in sync by the connector state I architected at Estuary" },
   { value: "−95%", label: "peak memory on planner-generated ClickHouse queries at Origin" },
   { value: "$8M", label: "U.S. Army contract secured by a proof of concept I led" },
-];
-
-export const toolbox = [
-  { tray: "Languages", items: ["Python", "TypeScript", "Rust", "SQL", "Go", "Java"] },
-  { tray: "Frontend", items: ["React", "Next.js", "Tailwind CSS", "shadcn/ui", "tRPC", "Zustand", "Zod", "TanStack Table"] },
-  { tray: "Backend & integrations", items: ["asyncio", "aiohttp", "REST APIs", "MCP", "Google OAuth", "RBAC"] },
-  { tray: "Data", items: ["PostgreSQL", "ClickHouse", "Kafka", "Kafka Streams", "CDC", "Avro", "ETL"] },
-  { tray: "Cloud & infra", items: ["AWS", "Docker", "Kubernetes", "Terraform", "CI/CD", "Linux"] },
-  { tray: "Observability", items: ["OpenTelemetry", "Prometheus", "Grafana"] },
 ];

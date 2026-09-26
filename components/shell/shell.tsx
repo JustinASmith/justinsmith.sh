@@ -5,9 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { site } from "@/lib/site";
 import { career } from "@/lib/career";
-import { facts, fish } from "@/lib/life";
+import { facts } from "@/lib/life";
 import { guessStatus, starkvilleNow } from "@/lib/time";
-import { ringCowbell } from "@/lib/cowbell";
+import { ringCowbell } from "@/lib/sfx";
 import { SHELL_OPEN_EVENT } from "./events";
 
 type Line = { id: number; kind: "in" | "out" | "err"; content: ReactNode };
@@ -16,6 +16,7 @@ const SECTIONS = ["work", "projects", "life", "contact"];
 const LINKS: Record<string, string> = {
   github: site.links.github,
   linkedin: site.links.linkedin,
+  ...(site.links.x ? { x: site.links.x } : {}),
   origin: site.company.url,
   source: site.links.source,
 };
@@ -28,11 +29,11 @@ const HELP: [string, string][] = [
   ["ls", "see what's here"],
   ["cd <section>", "jump to work, projects, life, or contact"],
   ["cat <file>", "print about.txt, resume.txt, or contact.txt"],
-  ["open <link>", "github, linkedin, origin, or source"],
+  ["open <link>", "github, linkedin, origin, source, and more"],
   ["email", "copy my email address"],
   ["date", "the time in Starkville, and what I'm probably doing"],
   ["theme <mode>", "light, dark, or system"],
-  ["fish", "cast a line"],
+  ["putt", "sink a putt"],
   ["neofetch", "system info, sort of"],
   ["scout", "meet the dog"],
   ["cowbell", "you know what to do"],
@@ -52,7 +53,7 @@ const fmtMonth = (ym?: string) => {
 
 function resumeText() {
   const rows = career
-    .filter((s) => s.id !== "career" && s.id !== "camgian")
+    .filter((s, i, all) => s.depth > 0 && !((all[i + 1]?.depth ?? 0) > s.depth))
     .slice()
     .reverse()
     .map((s) => {
@@ -70,15 +71,13 @@ const NEOFETCH_ART = String.raw`        \   |   /
    ~~~~  ~~~~~~~  ~~~~
        ~~~~   ~~~~`;
 
-function catchSomething() {
-  const total = fish.reduce((sum, f) => sum + f.weight, 0);
-  let roll = Math.random() * total;
-  const f = fish.find((x) => (roll -= x.weight) < 0) ?? fish[0];
-  const lbs = f.max ? (f.min + Math.random() * (f.max - f.min)).toFixed(1) : null;
+function puttOnce() {
+  const distance = [6, 8, 10, 13, 16, 20][Math.floor(Math.random() * 6)];
+  const made = Math.random() < (distance <= 10 ? 0.8 : 0.5);
   const fact = facts[Math.floor(Math.random() * facts.length)];
-  return lbs
-    ? `you caught a ${lbs} lb ${f.name}!\nfun fact: ${fact}`
-    : `you reeled in an old boot. 404: fish not found.\ncast again with 'fish'.`;
+  if (made) return `chains! drained it from ${distance} m.\nfun fact: ${fact}`;
+  const miss = Math.random() < 0.5 ? "came up short" : "spit out of the chains";
+  return `${miss} from ${distance} m. run it back with 'putt'.`;
 }
 
 let nextId = 0;
@@ -170,7 +169,7 @@ export function Shell() {
         return out(HELP.map(([c, d]) => `${c.padEnd(16)} ${d}`).join("\n"));
       case "whoami":
         return out(
-          `Justin Smith, software engineer in ${site.locationShort}.\nFounding forward-deployed engineer at Origin. Previously Estuary and Camgian.\nBuilds data-heavy software, usually right next to the customer.`,
+          `Justin Smith, software engineer in ${site.locationShort}.\nBuilding Origin's core product. Previously Estuary and Camgian.\nAlways building something on the side.`,
         );
       case "ls":
         return out(
@@ -205,11 +204,15 @@ export function Shell() {
       case "cat": {
         if (arg === "about.txt")
           return out(
-            "Born in Michigan, raised in Northeast Mississippi, and a Starkville local since my Mississippi State days.\nMy cousin helped me build my first computer, a Core 2 Duo desktop. I wanted it for games; I stayed for the software.\nThese days: data systems, customer problems, disc golf, bass fishing, and Scout, our Springer Spaniel.",
+            "Born in Michigan, raised in Northeast Mississippi, and a Starkville local since my Mississippi State days.\nMy cousin helped me build my first computer, a Core 2 Duo desktop. I wanted it for games; I stayed for the software.\nThese days: core product engineering at Origin, competitive disc golf (MPO), DIY projects, and a lot of time with my wife and our Springer Spaniel, Scout.",
           );
         if (arg === "resume.txt") return out(resumeText());
         if (arg === "contact.txt")
-          return out(`email     ${site.email}\nlinkedin  ${site.links.linkedin}\ngithub    ${site.links.github}`);
+          return out(
+            [`email     ${site.email}`, `linkedin  ${site.links.linkedin}`, `github    ${site.links.github}`]
+              .concat(site.links.x ? [`x         ${site.links.x}`] : [])
+              .join("\n"),
+          );
         return err(arg ? `cat: ${arg}: no such file` : "cat: which file? try 'ls'.");
       }
       case "open": {
@@ -238,13 +241,10 @@ export function Shell() {
         setTheme(arg);
         return out(`theme set to ${arg}.`);
       }
-      case "fish": {
-        const t = window.setTimeout(
-          () => print(line("out", catchSomething())),
-          900 + Math.random() * 1400,
-        );
+      case "putt": {
+        const t = window.setTimeout(() => print(line("out", puttOnce())), 900 + Math.random() * 1200);
         timers.current.push(t);
-        return out("casting… 🎣");
+        return out("lining it up… 🥏");
       }
       case "neofetch":
         return out(
@@ -254,11 +254,11 @@ export function Shell() {
               <span className="text-[#FF8A6E]">guest</span>@<span className="text-[#FF8A6E]">justinsmith.sh</span>
               {"\n"}---------------------{"\n"}
               {[
-                ["role", "founding fde @ origin"],
+                ["role", "software engineer @ origin"],
                 ["location", `${site.locationShort} (CT)`],
                 ["uptime", "5+ years shipping"],
                 ["langs", "python, typescript, rust, sql"],
-                ["hobbies", "disc golf, bass fishing, diy"],
+                ["hobbies", "disc golf (mpo), diy, building"],
                 ["dog", "scout, springer spaniel"],
               ].map(([k, v]) => (
                 <span key={k}>

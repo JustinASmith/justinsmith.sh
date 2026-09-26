@@ -1,5 +1,5 @@
 import { site } from "@/lib/site";
-import { ArrowUpRight, Github, LinkedIn } from "@/components/icons";
+import { ArrowUpRight, Github, LinkedIn, XLogo } from "@/components/icons";
 import { CopyEmail } from "./copy-email";
 
 const stripes = [
@@ -29,8 +29,8 @@ export function Contact() {
             Let&rsquo;s build something that <span className="italic text-accent font-wonk">holds up</span>.
           </h2>
           <p className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-ink-2">
-            Got a gnarly data problem, an integration that keeps breaking, or a website that needs some love? Or maybe you
-            need a fourth for disc golf. My inbox is open.
+            Got a product idea, a gnarly data problem, or a website that needs some love? Or maybe you need a fourth for a
+            round of disc golf. My inbox is open.
           </p>
           <a
             href={`mailto:${site.email}`}
@@ -46,6 +46,11 @@ export function Contact() {
             <a href={site.links.github} target="_blank" rel="noreferrer" className="btn-ghost !px-4 !py-2 !text-sm">
               <Github size={16} /> GitHub <ArrowUpRight size={14} className="text-ink-3" />
             </a>
+            {site.links.x ? (
+              <a href={site.links.x} target="_blank" rel="noreferrer" className="btn-ghost !px-4 !py-2 !text-sm">
+                <XLogo size={14} /> X <ArrowUpRight size={14} className="text-ink-3" />
+              </a>
+            ) : null}
           </div>
           <p className="mt-10 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-ink-3">
             Based in {site.location} · Working remotely on Central Time

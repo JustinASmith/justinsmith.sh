@@ -40,15 +40,6 @@ const config = {
           "70%": { boxShadow: "0 0 0 10px rgb(var(--accent) / 0)" },
           "100%": { boxShadow: "0 0 0 0 rgb(var(--accent) / 0)" },
         },
-        drift: { from: { transform: "translateY(0)" }, to: { transform: "translateY(var(--drift, 12px))" } },
-        bob: {
-          "0%, 100%": { transform: "translateY(0) rotate(-3deg)" },
-          "50%": { transform: "translateY(3px) rotate(3deg)" },
-        },
-        ripple: {
-          from: { transform: "scale(0.4)", opacity: "0.8" },
-          to: { transform: "scale(2.2)", opacity: "0" },
-        },
         wiggle: {
           "0%, 100%": { transform: "rotate(0deg)" },
           "20%": { transform: "rotate(-14deg)" },
@@ -56,8 +47,6 @@ const config = {
           "60%": { transform: "rotate(-8deg)" },
           "80%": { transform: "rotate(5deg)" },
         },
-        "stripe-slide": { from: { backgroundPosition: "0 0" }, to: { backgroundPosition: "28px 0" } },
-        "grow-x": { from: { transform: "scaleX(0)" }, to: { transform: "scaleX(1)" } },
         "fade-up": {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "none" },
@@ -67,11 +56,7 @@ const config = {
         blink: "blink 1.1s steps(1) infinite",
         "spin-slow": "spin 28s linear infinite",
         ring: "ring 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        bob: "bob 2.6s ease-in-out infinite",
-        ripple: "ripple 2.4s ease-out infinite",
         wiggle: "wiggle 0.6s ease-in-out",
-        "stripe-slide": "stripe-slide 1.2s linear infinite",
-        "grow-x": "grow-x 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both",
         "fade-up": "fade-up 0.35s ease-out both",
       },
       typography: {

@@ -21,6 +21,11 @@ export function SiteFooter() {
           <a href={site.links.source} className="hover:text-ink" target="_blank" rel="noreferrer">
             Source
           </a>
+          {site.links.x ? (
+            <a href={site.links.x} className="hover:text-ink" target="_blank" rel="noreferrer">
+              X
+            </a>
+          ) : null}
           <span className="hidden items-center gap-1.5 sm:inline-flex">
             Press <kbd className="kbd">/</kbd> for a shell
           </span>

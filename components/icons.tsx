@@ -157,3 +157,30 @@ export const LinkedIn = ({ size = 20, ...props }: IconProps) => (
     <path d="M20 3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM8.339 18.337H5.667v-8.59h2.672v8.59zM7.003 8.574a1.548 1.548 0 1 1 0-3.096 1.548 1.548 0 0 1 0 3.096zm11.335 9.763h-2.669V14.16c0-.996-.018-2.277-1.388-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248h-2.667v-8.59h2.56v1.174h.037c.355-.675 1.227-1.387 2.524-1.387 2.704 0 3.203 1.778 3.203 4.092v4.71z" />
   </svg>
 );
+
+export const XLogo = ({ size = 20, ...props }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" {...props}>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
+export const Heart = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" />
+  </Stroke>
+);
+
+export const Sparkle = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9-1.9 5.1-1.9-5.1-5.1-1.9 5.1-1.9z" />
+    <path d="M19 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" />
+  </Stroke>
+);
+
+export const Hammer = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M14.5 5.5l4 4-2.2 2.2-4-4z" />
+    <path d="M12.3 7.7 4 16a1.9 1.9 0 0 0 2.7 2.7L15 10.4" />
+    <path d="M14.5 5.5l1.2-1.2a2.8 2.8 0 0 1 4 4l-1.2 1.2" />
+  </Stroke>
+);

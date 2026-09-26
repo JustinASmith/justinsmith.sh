@@ -43,7 +43,7 @@ export default function NotesIndex() {
             </Link>{" "}
             or{" "}
             <Link href="/#life" className="link">
-              go fishing
+              sink a few putts
             </Link>
             .
           </p>
