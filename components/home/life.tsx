@@ -4,6 +4,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { DiscGolf, Fish, Paw, Roller } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { FishingPond } from "./fishing-pond";
+import { ScoutCard } from "./scout-card";
 
 const interestIcon: Record<Interest["id"], typeof Fish> = { disc: DiscGolf, fish: Fish, dog: Paw, home: Roller };
 const interestTint: Record<Interest["id"], string> = {
@@ -44,9 +45,19 @@ export function Life() {
                 const Icon = interestIcon[it.id];
                 return (
                   <li key={it.id} className="flex gap-4 py-5">
-                    <span className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-full", interestTint[it.id])}>
-                      <Icon size={22} />
-                    </span>
+                    {it.avatar ? (
+                      <Image
+                        src={it.avatar}
+                        alt=""
+                        width={44}
+                        height={44}
+                        className="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-gold/40"
+                      />
+                    ) : (
+                      <span className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-full", interestTint[it.id])}>
+                        <Icon size={22} />
+                      </span>
+                    )}
                     <div>
                       <p className="font-display text-[1.3rem] leading-tight font-soft">{it.name}</p>
                       <p className="mt-1 text-ink-2">{it.note}</p>
@@ -59,6 +70,8 @@ export function Life() {
           </div>
           <FishingPond className="reveal lg:col-span-7 lg:self-start" />
         </div>
+
+        <ScoutCard />
 
         <div className="mt-20">
           <p className="eyebrow">From the camera roll</p>

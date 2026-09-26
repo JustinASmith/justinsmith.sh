@@ -34,12 +34,15 @@ const HELP: [string, string][] = [
   ["theme <mode>", "light, dark, or system"],
   ["fish", "cast a line"],
   ["neofetch", "system info, sort of"],
+  ["scout", "meet the dog"],
   ["cowbell", "you know what to do"],
   ["clear", "clear the screen"],
   ["exit", "close the shell"],
 ];
 
-const COMMAND_NAMES = [...HELP.map(([c]) => c.split(" ")[0]), "history", "echo", "pwd", "sudo", "hire"];
+const COMMAND_NAMES = [...HELP.map(([c]) => c.split(" ")[0]), "history", "echo", "pwd", "sudo", "hire", "pet"];
+
+const DOG_ART = ["      __", " (___()'`;", " /,    /`", ' \\\\"--\\\\'].join("\n");
 
 const fmtMonth = (ym?: string) => {
   if (!ym) return "now";
@@ -202,7 +205,7 @@ export function Shell() {
       case "cat": {
         if (arg === "about.txt")
           return out(
-            "Born in Michigan, raised in Northeast Mississippi, and a Starkville local since my Mississippi State days.\nMy cousin helped me build my first computer, a Core 2 Duo desktop. I wanted it for games; I stayed for the software.\nThese days: data systems, customer problems, disc golf, bass fishing, and a Springer Spaniel in training.",
+            "Born in Michigan, raised in Northeast Mississippi, and a Starkville local since my Mississippi State days.\nMy cousin helped me build my first computer, a Core 2 Duo desktop. I wanted it for games; I stayed for the software.\nThese days: data systems, customer problems, disc golf, bass fishing, and Scout, our Springer Spaniel.",
           );
         if (arg === "resume.txt") return out(resumeText());
         if (arg === "contact.txt")
@@ -256,7 +259,7 @@ export function Shell() {
                 ["uptime", "5+ years shipping"],
                 ["langs", "python, typescript, rust, sql"],
                 ["hobbies", "disc golf, bass fishing, diy"],
-                ["dog", "springer spaniel (in training)"],
+                ["dog", "scout, springer spaniel"],
               ].map(([k, v]) => (
                 <span key={k}>
                   <span className="text-[#E3B04B]">{k.padEnd(9)}</span>
@@ -267,6 +270,19 @@ export function Shell() {
             </span>
           </span>,
         );
+      case "scout":
+        return out(
+          <span className="flex flex-wrap items-end gap-x-6 gap-y-2">
+            <span className="text-[#E3B04B]">{DOG_ART}</span>
+            <span>
+              Scout · Springer Spaniel · born 2024-09-01{"\n"}
+              drove 3.5 hours to bring him home.{"\n"}
+              <span className="text-[#7FC2A6]">status: good boy</span> (try &apos;pet&apos;)
+            </span>
+          </span>,
+        );
+      case "pet":
+        return out("Scout leans in for more. tail.wag_rate: high");
       case "cowbell":
         ringCowbell();
         return out("🔔 clank! more cowbell. Hail State!");

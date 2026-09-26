@@ -1,6 +1,6 @@
 import { site } from "./site";
 
-type Parts = { weekday: number; minutes: number; label: string; zone: string };
+type Parts = { weekday: number; minutes: number; label: string; zone: string; monthDay: string };
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -19,11 +19,13 @@ export function starkvilleNow(date = new Date()): Parts {
     new Intl.DateTimeFormat("en-US", { timeZone: site.timeZone, hour: "numeric", hourCycle: "h23" }).format(date),
   );
   const minute = Number(parts.minute);
+  const monthDay = new Intl.DateTimeFormat("en-US", { timeZone: site.timeZone, month: "2-digit", day: "2-digit" }).format(date);
   return {
     weekday: WEEKDAYS.indexOf(parts.weekday),
     minutes: hour24 * 60 + minute,
     label: `${parts.hour}:${parts.minute} ${parts.dayPeriod}`,
     zone: parts.timeZoneName ?? "CT",
+    monthDay, // "MM/DD"
   };
 }
 
@@ -34,7 +36,7 @@ const at = (h: number, m = 0) => h * 60 + m;
 // A tongue-in-cheek guess at what I'm up to. Edit freely.
 const weekday: Slot[] = [
   { until: at(6), text: "Asleep, probably. Unless something's on fire." },
-  { until: at(8), text: "Coffee, inbox, and a walk with the Springer." },
+  { until: at(8), text: "Coffee, inbox, and a walk with Scout." },
   { until: at(12), text: "Heads-down on a customer problem at Origin." },
   { until: at(13), text: "Out to lunch. Back in a few." },
   { until: at(17, 30), text: "Shipping something for an Origin customer." },
@@ -51,7 +53,10 @@ const weekend: Slot[] = [
   { until: at(24), text: "Asleep, probably." },
 ];
 
-export function guessStatus(parts: Pick<Parts, "weekday" | "minutes">) {
+export function guessStatus(parts: Pick<Parts, "weekday" | "minutes" | "monthDay">) {
+  if (parts.monthDay === "09/01" && parts.minutes >= at(7) && parts.minutes < at(22)) {
+    return "Celebrating Scout's birthday. Extra treats all around.";
+  }
   const slots = parts.weekday === 0 || parts.weekday === 6 ? weekend : weekday;
   return (slots.find((s) => parts.minutes < s.until) ?? slots[slots.length - 1]).text;
 }

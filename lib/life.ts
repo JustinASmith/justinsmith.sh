@@ -9,14 +9,38 @@ export const photos = [
   { src: "/photos/sunset-bike-ride.jpg", alt: "Justin and his wife with bikes on a bridge at sunset", caption: "Sunset bike ride." },
 ] as const;
 
-export type Interest = { id: "disc" | "fish" | "dog" | "home"; name: string; note: string; detail: string };
+export type Interest = {
+  id: "disc" | "fish" | "dog" | "home";
+  name: string;
+  note: string;
+  detail: string;
+  /** Optional photo shown in place of the icon. */
+  avatar?: string;
+};
 
 export const interests: Interest[] = [
   { id: "disc", name: "Disc golf", note: "Casual leagues and competitive tournaments.", detail: "Habitat: wooded courses" },
   { id: "fish", name: "Bass fishing", note: "Early mornings on the water, waiting on a bite.", detail: "Habitat: any lake with a boat ramp" },
-  { id: "dog", name: "Our Springer Spaniel", note: "Training is ongoing. It is unclear who is training whom.", detail: "Habitat: wherever the tennis ball went" },
+  {
+    id: "dog",
+    name: "Scout, our Springer Spaniel",
+    note: "Training is ongoing. It is unclear who is training whom.",
+    detail: "Habitat: wherever the tennis ball went",
+    avatar: "/photos/scout-avatar.jpg",
+  },
   { id: "home", name: "Home projects", note: "DIY, landscaping, and a lot of painting.", detail: "Habitat: the garage" },
 ];
+
+export const scout = {
+  name: "Scout",
+  breed: "Springer Spaniel",
+  born: "2024-09-01",
+  photos: [
+    { src: "/photos/scout-puppy.jpg", alt: "Scout as a puppy, sitting in front of a stone wall", caption: "Day one." },
+    { src: "/photos/scout-christmas.jpg", alt: "Scout lying on a wood floor in front of a Christmas tree", caption: "Supervising Christmas." },
+    { src: "/photos/scout.jpg", alt: "Scout, grown up, sitting in a yard with pine trees behind him at sunset", caption: "All grown up." },
+  ],
+} as const;
 
 /** Every catch in the pond reels in one of these. */
 export const facts = [
@@ -32,7 +56,8 @@ export const facts = [
   "At Estuary I drafted an internal RFC on AI-assisted development with Claude Code.",
   "We honeymooned in Jamaica. Ziplines and coconut water were involved.",
   "I play disc golf in casual leagues and in competitive tournaments.",
-  "Our Springer Spaniel is in training. So am I, honestly.",
+  "Our Springer Spaniel, Scout, was born on September 1, 2024.",
+  "We drove three and a half hours to bring Scout home. I had to convince my wife first.",
   "I build and maintain the website for a psychiatry practice here in Starkville.",
 ];
 
