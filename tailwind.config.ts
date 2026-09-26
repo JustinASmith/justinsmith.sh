@@ -1,157 +1,94 @@
 import type { Config } from "tailwindcss";
-const svgToDataUri = require("mini-svg-data-uri");
 
-const colors = require("tailwindcss/colors");
-const {
-  default: flattenColorPalette,
-} = require("tailwindcss/lib/util/flattenColorPalette");
+// Colors are RGB triplets defined in app/globals.css so they can flip
+// between the light "paper" theme and the dark "night on the lake" theme.
+const token = (name: string) => `rgb(var(--${name}) / <alpha-value>)`;
 
 const config = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx,mdx}",
     "./components/**/*.{ts,tsx}",
-    "./sections/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
+    "./content/**/*.mdx",
   ],
-  prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
-    fontFamily: {
-      sans: ["Inter", "system-ui", "sans-serif"],
-    },
     extend: {
-      typography: {
-        DEFAULT: {
-          css: {
-            maxWidth: "none",
-          },
-        },
-      },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
+        paper: { DEFAULT: token("paper"), 2: token("paper-2") },
+        card: token("card"),
+        ink: { DEFAULT: token("ink"), 2: token("ink-2"), 3: token("ink-3") },
+        rule: token("rule"),
+        accent: { DEFAULT: token("accent"), ink: token("accent-ink") },
+        "on-accent": token("on-accent"),
+        pine: token("pine"),
+        gold: token("gold"),
+        lake: token("lake"),
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      fontFamily: {
+        display: ["var(--font-fraunces)", "Georgia", "serif"],
+        sans: ["var(--font-geist)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+      },
+      maxWidth: {
+        page: "1180px",
       },
       keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+        blink: { "0%, 49%": { opacity: "1" }, "50%, 100%": { opacity: "0" } },
+        ring: {
+          "0%": { boxShadow: "0 0 0 0 rgb(var(--accent) / 0.45)" },
+          "70%": { boxShadow: "0 0 0 10px rgb(var(--accent) / 0)" },
+          "100%": { boxShadow: "0 0 0 0 rgb(var(--accent) / 0)" },
         },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+        wiggle: {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "20%": { transform: "rotate(-14deg)" },
+          "40%": { transform: "rotate(12deg)" },
+          "60%": { transform: "rotate(-8deg)" },
+          "80%": { transform: "rotate(5deg)" },
         },
-        spotlight: {
-          "0%": {
-            opacity: "0",
-            transform: "translate(-72%, -62%) scale(0.5)",
-          },
-          "100%": {
-            opacity: "1",
-            transform: "translate(-50%,-40%) scale(1)",
-          },
-        },
-        scroll: {
-          to: {
-            transform: "translate(calc(-50% - 0.5rem))",
-          },
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "none" },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        spotlight: "spotlight 2s ease .75s 1 forwards",
-        scroll:
-          "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+        blink: "blink 1.1s steps(1) infinite",
+        "spin-slow": "spin 28s linear infinite",
+        ring: "ring 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        wiggle: "wiggle 0.6s ease-in-out",
+        "fade-up": "fade-up 0.35s ease-out both",
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            "--tw-prose-body": "rgb(var(--ink-2))",
+            "--tw-prose-headings": "rgb(var(--ink))",
+            "--tw-prose-lead": "rgb(var(--ink-2))",
+            "--tw-prose-links": "rgb(var(--accent-ink))",
+            "--tw-prose-bold": "rgb(var(--ink))",
+            "--tw-prose-counters": "rgb(var(--ink-3))",
+            "--tw-prose-bullets": "rgb(var(--accent))",
+            "--tw-prose-hr": "rgb(var(--rule))",
+            "--tw-prose-quotes": "rgb(var(--ink))",
+            "--tw-prose-quote-borders": "rgb(var(--accent))",
+            "--tw-prose-captions": "rgb(var(--ink-3))",
+            "--tw-prose-code": "rgb(var(--ink))",
+            "--tw-prose-pre-code": "rgb(var(--ink))",
+            "--tw-prose-pre-bg": "rgb(var(--card))",
+            "--tw-prose-th-borders": "rgb(var(--rule))",
+            "--tw-prose-td-borders": "rgb(var(--rule))",
+            maxWidth: "68ch",
+            "h1, h2, h3": { fontFamily: "var(--font-fraunces), Georgia, serif", fontWeight: "500" },
+            a: { textUnderlineOffset: "3px", textDecorationThickness: "1px" },
+            "code::before": { content: "none" },
+            "code::after": { content: "none" },
+          },
+        },
       },
     },
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    require("@tailwindcss/typography"),
-    addVariablesForColors,
-    function ({ matchUtilities, theme }: any) {
-      matchUtilities(
-        {
-          "bg-grid": (value: any) => ({
-            backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100" height="100" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
-            )}")`,
-          }),
-          "bg-grid-small": (value: any) => ({
-            backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="8" height="8" fill="none" stroke="${value}"><path d="M0 .5H31.5V32"/></svg>`
-            )}")`,
-          }),
-          "bg-dot": (value: any) => ({
-            backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="4.6257413380501518"></circle></svg>`
-            )}")`,
-          }),
-          "bg-dot-small": (value: any) => ({
-            backgroundImage: `url("${svgToDataUri(
-              `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16" fill="none"><circle fill="${value}" id="pattern-circle" cx="10" cy="10" r="1.6257413380501518"></circle></svg>`
-            )}")`,
-          }),
-        },
-        { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
-      );
-    },
-  ],
+  plugins: [require("@tailwindcss/typography")],
 } satisfies Config;
-
-function addVariablesForColors({ addBase, theme }: any) {
-  let allColors = flattenColorPalette(theme("colors"));
-  let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
-  );
-
-  addBase({
-    ":root": newVars,
-  });
-}
 
 export default config;

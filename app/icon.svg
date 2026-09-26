@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E3B04B"/>
+      <stop offset="0.62" stop-color="#E4572E"/>
+    </linearGradient>
+    <mask id="water">
+      <rect width="64" height="64" fill="#fff"/>
+      <rect y="36" width="64" height="2.4" fill="#000"/>
+      <rect y="41.5" width="64" height="3.2" fill="#000"/>
+      <rect y="47.5" width="64" height="4" fill="#000"/>
+    </mask>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="#1C1A16"/>
+  <circle cx="32" cy="34" r="19" fill="url(#sun)" mask="url(#water)"/>
+</svg>

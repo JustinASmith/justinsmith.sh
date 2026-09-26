@@ -4,20 +4,7 @@ const { withContentlayer } = require("next-contentlayer2");
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "pbs.twimg.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "unsplash.com",
-      },
-    ],
+    formats: ["image/avif", "image/webp"],
   },
   turbopack: {},
 };

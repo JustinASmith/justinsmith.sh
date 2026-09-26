@@ -1,60 +1,40 @@
-import { notFound } from "next/navigation"
-import { Metadata } from "next"
-import { allPages } from "contentlayer2/generated"
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { allPages } from "contentlayer2/generated";
+import { Mdx } from "@/components/mdx-components";
 
-import { Mdx } from "@/components/mdx-components"
+type Props = { params: Promise<{ slug: string[] }> };
 
-interface PageProps {
-  params: {
-    slug: string[]
-  }
+export const dynamicParams = false;
+
+async function getPage(params: Props["params"]) {
+  const { slug } = await params;
+  return allPages.find((page) => page.slugAsParams === slug.join("/"));
 }
 
-async function getPageFromParams(params: PageProps["params"]) {
-  const slug = params?.slug?.join("/")
-  const page = allPages.find((page) => page.slugAsParams === slug)
-
-  if (!page) {
-    null
-  }
-
-  return page
+export function generateStaticParams() {
+  return allPages.map((page) => ({ slug: page.slugAsParams.split("/") }));
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const page = await getPageFromParams(params)
-
-  if (!page) {
-    return {}
-  }
-
-  return {
-    title: page.title,
-    description: page.description,
-  }
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const page = await getPage(params);
+  if (!page) return {};
+  return { title: page.title, description: page.description, alternates: { canonical: page.slug.replace(/^\/pages/, "") } };
 }
 
-export async function generateStaticParams(): Promise<PageProps["params"][]> {
-  return allPages.map((page) => ({
-    slug: page.slugAsParams.split("/"),
-  }))
-}
-
-export default async function PagePage({ params }: PageProps) {
-  const page = await getPageFromParams(params)
-
-  if (!page) {
-    notFound()
-  }
+export default async function Page({ params }: Props) {
+  const page = await getPage(params);
+  if (!page) notFound();
 
   return (
-    <article className="py-6 prose dark:prose-invert">
-      <h1>{page.title}</h1>
-      {page.description && <p className="text-xl">{page.description}</p>}
-      <hr />
-      <Mdx code={page.body.code} />
+    <article className="container-page py-20 sm:py-28">
+      <p className="eyebrow">{page.title}</p>
+      <h1 className="mt-6 max-w-3xl font-display text-[clamp(2.6rem,7vw,5rem)] leading-[0.95] tracking-[-0.04em] font-soft">
+        {page.description ?? page.title}
+      </h1>
+      <div className="prose prose-lg mt-12 dark:prose-invert">
+        <Mdx code={page.body.code} />
+      </div>
     </article>
-  )
+  );
 }
