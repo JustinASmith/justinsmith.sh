@@ -24,6 +24,7 @@ const config = {
         pine: token("pine"),
         gold: token("gold"),
         lake: token("lake"),
+        viz: { accent: token("viz-accent"), muted: token("viz-muted") },
       },
       fontFamily: {
         display: ["var(--font-fraunces)", "Georgia", "serif"],

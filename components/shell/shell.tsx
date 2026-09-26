@@ -18,6 +18,7 @@ const LINKS: Record<string, string> = {
   linkedin: site.links.linkedin,
   ...(site.links.x ? { x: site.links.x } : {}),
   origin: site.company.url,
+  pdga: site.links.pdga,
   source: site.links.source,
 };
 const FILES = ["about.txt", "resume.txt", "contact.txt"];
@@ -34,6 +35,7 @@ const HELP: [string, string][] = [
   ["date", "the time in Starkville, and what I'm probably doing"],
   ["theme <mode>", "light, dark, or system"],
   ["putt", "sink a putt"],
+  ["pdga", "my disc golf rating, by the numbers"],
   ["neofetch", "system info, sort of"],
   ["scout", "meet the dog"],
   ["cowbell", "you know what to do"],
@@ -245,6 +247,13 @@ export function Shell() {
         const t = window.setTimeout(() => print(line("out", puttOnce())), 900 + Math.random() * 1200);
         timers.current.push(t);
         return out("lining it up… 🥏");
+      }
+      case "pdga": {
+        // Loaded on demand so the PDGA data stays out of every page's bundle.
+        import("@/lib/pdga")
+          .then(({ shellSummary }) => print(line("out", shellSummary(new Date().toISOString().slice(0, 10)))))
+          .catch(() => print(line("err", "pdga: couldn't load the numbers. try 'open pdga'.")));
+        return out("pulling up my pdga numbers…");
       }
       case "neofetch":
         return out(

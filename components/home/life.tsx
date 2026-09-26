@@ -2,7 +2,9 @@ import Image from "next/image";
 import { offHours, photos, type OffHours } from "@/lib/life";
 import { SectionHeading } from "@/components/section-heading";
 import { DiscGolf, Heart, Paw, Roller } from "@/components/icons";
+import { pdga } from "@/lib/pdga";
 import { cn } from "@/lib/utils";
+import { DiscGolfCard } from "./disc-golf";
 import { PuttingGame } from "./putting-game";
 import { ScoutCard } from "./scout-card";
 
@@ -61,7 +63,16 @@ export function Life() {
                     <div>
                       <p className="font-display text-[1.3rem] leading-tight font-soft">{it.name}</p>
                       <p className="mt-1 text-ink-2">{it.note}</p>
-                      <p className="mt-1.5 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-3">{it.meta}</p>
+                      {it.id === "disc" ? (
+                        <a
+                          href="#disc-golf"
+                          className="mt-1.5 inline-block font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-3 underline decoration-rule underline-offset-4 hover:text-accent-ink hover:decoration-accent"
+                        >
+                          pdga #{pdga.player} · rating {pdga.profile.rating} ↓
+                        </a>
+                      ) : (
+                        <p className="mt-1.5 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-3">{it.meta}</p>
+                      )}
                     </div>
                   </li>
                 );
@@ -70,6 +81,8 @@ export function Life() {
           </div>
           <PuttingGame className="reveal lg:col-span-7 lg:self-start" />
         </div>
+
+        <DiscGolfCard />
 
         <ScoutCard />
 
