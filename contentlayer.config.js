@@ -39,7 +39,7 @@ export const Page = defineDocumentType(() => ({
 
 export const Post = defineDocumentType(() => ({
   name: "Post",
-  filePathPattern: `posts/**/*.mdx`,
+  filePathPattern: `notes/**/*.mdx`,
   contentType: "mdx",
   fields: {
     title: {
@@ -53,8 +53,9 @@ export const Post = defineDocumentType(() => ({
       type: "date",
       required: true,
     },
-    image: {
-      type: "string",
+    draft: {
+      type: "boolean",
+      default: false,
     },
   },
   computedFields,

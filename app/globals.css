@@ -2,64 +2,314 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Palette: warm paper + ink by day, a pine-dark lake by night.
+ * Accent is "bobber red"; pine, gold and lake colour the trace lanes.
+ */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 160.1 90.74% 32.35%;
-    --primary-foreground: 221.2 83.2% 53.3%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --paper: 244 239 229;
+    --paper-2: 236 229 215;
+    --card: 250 247 240;
+    --ink: 28 26 22;
+    --ink-2: 74 70 62;
+    --ink-3: 111 105 93;
+    --rule: 217 208 190;
+    --accent: 201 58 34;
+    --accent-ink: 168 48 26;
+    --on-accent: 255 250 242;
+    --pine: 47 91 76;
+    --gold: 196 139 38;
+    --lake: 58 110 143;
+    --shadow: 60 45 20;
+    color-scheme: light;
   }
 
   .dark {
-    --background: 209 29% 16%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 160.1 90.74% 42.35%;
-    --primary-foreground: 217.2 91.2% 59.8%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --paper: 17 21 19;
+    --paper-2: 23 29 26;
+    --card: 27 33 30;
+    --ink: 236 229 214;
+    --ink-2: 189 181 165;
+    --ink-3: 146 139 124;
+    --rule: 45 53 48;
+    --accent: 255 107 74;
+    --accent-ink: 255 138 110;
+    --on-accent: 20 16 12;
+    --pine: 127 194 166;
+    --gold: 227 176 75;
+    --lake: 121 176 210;
+    --shadow: 0 0 0;
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5.5rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.22);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-page;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
   }
-  body {
-    @apply bg-background text-foreground;
+
+  /* Fraunces personality: soft corners everywhere, "wonky" italics for flourishes. */
+  .font-soft {
+    font-variation-settings: "SOFT" 100, "WONK" 0;
+  }
+  .font-wonk {
+    font-variation-settings: "SOFT" 100, "WONK" 1;
+  }
+
+  .eyebrow {
+    @apply font-mono text-[0.72rem] font-medium uppercase tracking-[0.14em] text-ink-3;
+  }
+
+  .link {
+    @apply text-ink underline decoration-rule decoration-1 underline-offset-4 transition-colors hover:text-accent-ink hover:decoration-accent;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[0.95rem] font-medium transition-[transform,background-color,color,box-shadow] duration-200 active:translate-y-px;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-on-accent shadow-[0_1px_0_rgb(var(--shadow)/0.15),0_8px_24px_-12px_rgb(var(--accent)/0.8)] hover:-translate-y-0.5 hover:shadow-[0_1px_0_rgb(var(--shadow)/0.15),0_14px_30px_-12px_rgb(var(--accent)/0.9)];
+  }
+  .btn-ghost {
+    @apply btn border border-ink/15 bg-card/60 text-ink hover:border-ink/30 hover:bg-card;
+  }
+
+  .card-surface {
+    @apply rounded-3xl border border-rule/70 bg-card shadow-[0_1px_0_rgb(var(--shadow)/0.04),0_24px_48px_-32px_rgb(var(--shadow)/0.35)];
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-rule bg-paper px-2.5 py-1 font-mono text-[0.72rem] leading-none text-ink-2;
+  }
+
+  .kbd {
+    @apply inline-flex min-w-[1.4rem] items-center justify-center rounded-md border border-ink/15 bg-card px-1.5 py-0.5 font-mono text-[0.7rem] leading-none text-ink-2 shadow-[0_1px_0_rgb(var(--shadow)/0.12)];
   }
 }
 
 @layer utilities {
-  .heading {
-    @apply font-bold text-4xl md:text-5xl text-center;
+  /* Dotted "engineering notebook" paper */
+  .bg-dots {
+    background-image: radial-gradient(rgb(var(--ink) / 0.12) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 78%, transparent);
+    mask-image: linear-gradient(to bottom, black 78%, transparent);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Gentle reveal-on-scroll, CSS only. Browsers without scroll timelines just show everything. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+/* Trace bars: grow in as they scroll into view; open spans get moving stripes. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bar-grow {
+      transform-origin: left center;
+      animation: bar-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 45%;
+    }
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.bar-live {
+  background-image: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 0.24) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgb(255 255 255 / 0.24) 50%,
+    rgb(255 255 255 / 0.24) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 14px 14px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bar-live {
+    animation: bar-stripes 0.9s linear infinite;
+  }
+  @supports (animation-timeline: view()) {
+    .bar-live.bar-grow {
+      animation:
+        bar-grow linear both,
+        bar-stripes 0.9s linear infinite;
+      animation-timeline: view(), auto;
+      animation-range: entry 20% cover 45%, normal;
+    }
+  }
+}
+
+@keyframes bar-stripes {
+  from {
+    background-position: 14px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+/* The fishing pond */
+@media (prefers-reduced-motion: no-preference) {
+  .pond-waves {
+    animation: pond-drift 6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes pond-drift {
+  from {
+    transform: translateX(-14px);
+  }
+  to {
+    transform: translateX(14px);
+  }
+}
+
+@keyframes plop {
+  0% {
+    transform: translate(-150px, -110px) rotate(-40deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-60px, -130px) rotate(-10deg);
+  }
+  85% {
+    transform: translate(0, 8px) rotate(6deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+}
+
+@keyframes dip {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(10px) rotate(-6deg);
+  }
+  60% {
+    transform: translateY(4px) rotate(5deg);
+  }
+}
+
+@keyframes leap {
+  0% {
+    transform: translateY(70px) rotate(-25deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(-16px) rotate(10deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(1deg);
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
