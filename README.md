@@ -49,7 +49,7 @@ The disc golf card reads `data/pdga.json`, which `pnpm pdga:sync` builds from my
 
 `lib/pdga.ts` turns that into the chart, the milestones, and a projection of the next monthly ratings update. The projection uses PDGA's published formula (12-month window, outliers dropped, newest quarter of rounds double-weighted, weighted by holes), checked against my own rating history.
 
-A scheduled GitHub Action (`.github/workflows/pdga-sync.yml`) runs the sync every morning and commits only when something changed; run it by hand from the Actions tab any time.
+A scheduled GitHub Action (`.github/workflows/pdga-sync.yml`) runs the sync every morning, or by hand from the Actions tab. When something changed, it opens a pull request from the `pdga-sync` branch with a summary of what's new (or refreshes the one already open); merging it updates the site. It needs **Allow GitHub Actions to create and approve pull requests** turned on under Settings → Actions → General.
 
 ## Structure
 
