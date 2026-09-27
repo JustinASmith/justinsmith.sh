@@ -6,6 +6,7 @@
  *   pnpm pdga:sync --from <dir>     parse pages saved earlier (player.html, history.html,
  *                                   details.html, wins.html, stats-<year>.html, event-<id>.html)
  *   pnpm pdga:sync --dry-run        parse and check everything, but don't write the file
+ *   pnpm pdga:sync --changes <file>  also write a Markdown summary of what changed (for the sync PR)
  *
  * Official round ratings come from the player's ratings detail page. Rounds played
  * since the last monthly ratings update only have unofficial ratings, and those live
@@ -28,7 +29,11 @@ const CRAWL_DELAY_MS = 10_000;
 const USER_AGENT = "justinsmith.sh pdga-sync (+https://justinsmith.sh)";
 
 const { values: args } = parseArgs({
-  options: { from: { type: "string" }, "dry-run": { type: "boolean", default: false } },
+  options: {
+    from: { type: "string" },
+    "dry-run": { type: "boolean", default: false },
+    changes: { type: "string" },
+  },
 });
 
 // ---------------------------------------------------------------------------
@@ -287,6 +292,76 @@ function format(data) {
 }
 
 // ---------------------------------------------------------------------------
+// What changed, in words, for the pull request the scheduled sync opens.
+
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const fmtDate = (d) => (d ? `${MONTH_NAMES[Number(d.slice(5, 7)) - 1]} ${Number(d.slice(8, 10))}, ${d.slice(0, 4)}` : "unknown date");
+const ordinal = (n) => {
+  const teen = n % 100 >= 11 && n % 100 <= 13;
+  return `${n}${teen ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th")}`;
+};
+
+/** Same trimming as shortEventName() in lib/pdga-format.ts: drop sponsors and "Annual". */
+const shortName = (name) =>
+  name
+    .replace(/\s+(?:presented|sponsored|powered)\s+by\b.*$/i, "")
+    .replace(/\s*\([^)]*\)/g, "")
+    .replace(/^The\s+/i, "")
+    .replace(/\b(\d+(?:st|nd|rd|th))\s+Annual\s+/i, "$1 ")
+    .replace(/\s*-\s+/g, " – ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+function describeChanges(before, after) {
+  if (!before) return ["First snapshot."];
+  const lines = [];
+  const was = before.profile;
+  const now = after.profile;
+  if (was.ratingDate !== now.ratingDate || was.rating !== now.rating) {
+    lines.push(
+      was.rating === now.rating
+        ? `Official rating unchanged at ${now.rating} (${fmtDate(now.ratingDate)} update)`
+        : `Official rating: ${was.rating} → ${now.rating} (${fmtDate(now.ratingDate)} update)`,
+    );
+  }
+
+  const rated = (e) => e.rounds.filter((r) => r.rating != null).map((r) => r.rating);
+  const list = (ratings) => (ratings.length ? ratings.join(" and ") : "none");
+  const label = (e) => `${shortName(e.name)} (${e.division}, ${fmtDate(e.start)})`;
+  const place = (p) => (p ? ordinal(p) : "none");
+  const old = new Map(before.events.map((e) => [e.id, e]));
+  for (const e of after.events) {
+    const prev = old.get(e.id);
+    old.delete(e.id);
+    if (!prev) {
+      const finish = e.dnf ? "DNF" : e.place ? ordinal(e.place) : "no place yet";
+      const rounds = rated(e).length ? `round ratings ${list(rated(e))}${e.ratings === "unofficial" ? " (unofficial)" : ""}` : "no round ratings yet";
+      lines.push(`New result: ${label(e)}: ${finish}, ${rounds}${e.live ? "; not reported to PDGA yet" : ""}`);
+      continue;
+    }
+    if (prev.live && !e.live) lines.push(`Now reported to PDGA: ${label(e)}`);
+    if (prev.place !== e.place) lines.push(`Place changed: ${label(e)}: ${place(prev.place)} → ${place(e.place)}`);
+    if (prev.win !== e.win) lines.push(`${e.win ? "Official win" : "No longer listed as a win"}: ${label(e)}`);
+    const same = JSON.stringify(rated(prev)) === JSON.stringify(rated(e));
+    if (prev.ratings !== e.ratings && e.ratings === "official") {
+      lines.push(`Round ratings now official: ${label(e)}: ${list(rated(e))}${same ? "" : ` (unofficially ${list(rated(prev))})`}`);
+    } else if (!same) {
+      lines.push(`Round ratings: ${label(e)}: ${list(rated(prev))} → ${list(rated(e))}${e.ratings === "unofficial" ? " (unofficial)" : ""}`);
+    }
+  }
+  for (const e of old.values()) lines.push(`Removed: ${label(e)}`);
+
+  if (now.nextEvent && now.nextEvent.id !== was.nextEvent?.id) {
+    lines.push(`Up next: ${shortName(now.nextEvent.name)}, ${now.nextEvent.location} (${fmtDate(now.nextEvent.start)})`);
+  }
+  return lines.length ? lines : ["Only small details changed; see the diff."];
+}
+
+const changesMarkdown = (lines) =>
+  `New data from my [PDGA profile](${ORIGIN}/player/${PLAYER}):\n\n${lines.map((l) => `- ${l}`).join("\n")}\n\n` +
+  "Opened by the daily PDGA sync. Merging it updates the site. If the next sync finds more, it refreshes this pull request.\n";
+
+// ---------------------------------------------------------------------------
 
 async function main() {
   console.log(args.from ? `Reading saved pages from ${args.from}` : `Syncing PDGA #${PLAYER} (10 s between requests)`);
@@ -404,12 +479,16 @@ async function main() {
     console.log("No changes since the last sync.");
     return;
   }
+  const changes = describeChanges(previous, data);
+  console.log("Changes:");
+  for (const line of changes) console.log(`  - ${line}`);
   if (args["dry-run"]) {
     console.log("Dry run: data/pdga.json not written.");
     return;
   }
   await writeFile(OUT, format(data));
   console.log("Wrote data/pdga.json");
+  if (args.changes) await writeFile(args.changes, changesMarkdown(changes));
 }
 
 main().catch((error) => {

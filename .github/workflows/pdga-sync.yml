@@ -1,6 +1,10 @@
 # Keeps data/pdga.json (the disc golf section) current: new results, unofficial round
-# ratings, and each month's official ratings update. It commits only when the data
-# changed, and that commit is what redeploys the site.
+# ratings, and each month's official ratings update. When anything changed, it opens a
+# pull request from the pdga-sync branch (or refreshes the one already open); merging
+# that pull request is what updates the site.
+#
+# Needs Settings → Actions → General → Workflow permissions →
+# "Allow GitHub Actions to create and approve pull requests".
 name: Sync PDGA data
 
 on:
@@ -11,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: pdga-sync
@@ -20,7 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # Always main, even for a manual run started from another branch, so the pull
+      # request never picks up unrelated commits.
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: pnpm/action-setup@v4
         with:
@@ -34,17 +43,39 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # Waits 10 seconds between requests, as pdga.com's robots.txt asks.
-      - run: pnpm pdga:sync
+      - run: pnpm pdga:sync --changes "$RUNNER_TEMP/pdga-changes.md"
 
-      - name: Commit changes
+      - name: Open or refresh the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- data/pdga.json; then
             echo "No changes."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/pdga.json
-          git commit -m "Sync PDGA data"
-          git pull --rebase
-          git push
+          pr=$(gh pr list --head pdga-sync --base main --state open --json number --jq '.[0].number // empty')
+          # Does the pdga-sync branch already have this data (the timestamp aside)?
+          if git fetch -q origin pdga-sync 2>/dev/null &&
+            [ "$(git show FETCH_HEAD:data/pdga.json | jq -S 'del(.syncedAt)')" = "$(jq -S 'del(.syncedAt)' data/pdga.json)" ]; then
+            # Only stop if an open pull request carries it; otherwise a failed
+            # "gh pr create" would never be retried.
+            if [ -n "$pr" ]; then
+              echo "Pull request #$pr already has this data."
+              exit 0
+            fi
+            echo "The pdga-sync branch already has this data; opening its pull request."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            # Built on main (see checkout), so the pull request shows everything main is missing.
+            git checkout -B pdga-sync
+            git add data/pdga.json
+            git commit -m "Sync PDGA data"
+            git push --force origin pdga-sync
+          fi
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --body-file "$RUNNER_TEMP/pdga-changes.md"
+            echo "Refreshed pull request #$pr."
+          else
+            gh pr create --base main --head pdga-sync --title "Sync PDGA data" --body-file "$RUNNER_TEMP/pdga-changes.md"
+          fi
