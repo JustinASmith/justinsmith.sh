@@ -25,7 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # Always main, even for a manual run started from another branch, so the pull
+      # request never picks up unrelated commits.
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: pnpm/action-setup@v4
         with:
@@ -49,21 +53,26 @@ jobs:
             echo "No changes."
             exit 0
           fi
-          # Skip if the pdga-sync branch already has this data (the timestamp aside),
-          # so an unmerged pull request isn't re-pushed every morning.
+          pr=$(gh pr list --head pdga-sync --base main --state open --json number --jq '.[0].number // empty')
+          # Does the pdga-sync branch already have this data (the timestamp aside)?
           if git fetch -q origin pdga-sync 2>/dev/null &&
             [ "$(git show FETCH_HEAD:data/pdga.json | jq -S 'del(.syncedAt)')" = "$(jq -S 'del(.syncedAt)' data/pdga.json)" ]; then
-            echo "The pdga-sync branch already has this data."
-            exit 0
+            # Only stop if an open pull request carries it; otherwise a failed
+            # "gh pr create" would never be retried.
+            if [ -n "$pr" ]; then
+              echo "Pull request #$pr already has this data."
+              exit 0
+            fi
+            echo "The pdga-sync branch already has this data; opening its pull request."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            # Built on main (see checkout), so the pull request shows everything main is missing.
+            git checkout -B pdga-sync
+            git add data/pdga.json
+            git commit -m "Sync PDGA data"
+            git push --force origin pdga-sync
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Always rebuilt from main, so the pull request shows everything main is missing.
-          git checkout -B pdga-sync
-          git add data/pdga.json
-          git commit -m "Sync PDGA data"
-          git push --force origin pdga-sync
-          pr=$(gh pr list --head pdga-sync --base main --state open --json number --jq '.[0].number // empty')
           if [ -n "$pr" ]; then
             gh pr edit "$pr" --body-file "$RUNNER_TEMP/pdga-changes.md"
             echo "Refreshed pull request #$pr."
