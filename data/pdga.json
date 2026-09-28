@@ -1,7 +1,7 @@
 {
   "player": 200786,
   "url": "https://www.pdga.com/player/200786",
-  "syncedAt": "2026-09-26T23:28:28.744Z",
+  "syncedAt": "2026-09-28T19:44:17.272Z",
   "profile": {
     "name": "Justin Smith",
     "location": "Starkville, Mississippi, United States",
@@ -10,7 +10,7 @@
     "rating": 935,
     "ratingDate": "2026-09-08",
     "ratingChange": -3,
-    "careerEvents": 49,
+    "careerEvents": 50,
     "careerWins": 4,
     "careerEarnings": 235,
     "nextEvent": {
@@ -110,6 +110,6 @@
     {"id":105083,"name":"13th Annual Reservoir Dawgs Open Presented by 74 SUNS* Sponsored by WESTSIDE DISC","division":"MPO","tier":"C","start":"2026-08-01","end":"2026-08-01","place":15,"points":10,"prize":0,"win":false,"ratings":"official","rounds":[{"round":1,"score":67,"rating":907,"holes":18,"counted":true},{"round":2,"score":65,"rating":940,"holes":18,"counted":true}]},
     {"id":104479,"name":"Dawg Daze Open 2026 Presented By Chick-fil-a :Starkville","division":"MPO","tier":"B","start":"2026-08-22","end":"2026-08-22","place":15,"points":15,"prize":0,"win":false,"ratings":"official","rounds":[{"round":1,"score":59,"rating":903,"holes":18,"counted":true},{"round":2,"score":53,"rating":938,"holes":18,"counted":true}]},
     {"id":98153,"name":"The 11th Annual Autumn Glory Open Presented by 1010 Discs","division":"MPO","tier":"B","start":"2026-09-12","end":"2026-09-12","place":12,"points":105,"prize":0,"win":false,"ratings":"unofficial","rounds":[{"round":1,"score":64,"rating":942,"holes":18},{"round":2,"score":53,"rating":1007,"holes":18}]},
-    {"id":101328,"name":"Winston County Classic","division":"MPO","tier":"B","start":"2026-09-26","end":"2026-09-26","place":17,"points":0,"prize":0,"win":false,"live":true,"ratings":"unofficial","rounds":[{"round":1,"score":73,"rating":883,"holes":18},{"round":2,"score":65,"rating":942,"holes":18}]}
+    {"id":101328,"name":"Winston County Classic","division":"MPO","tier":"B","start":"2026-09-26","end":"2026-09-26","place":17,"points":15,"prize":0,"win":false,"ratings":"unofficial","rounds":[{"round":1,"score":73,"rating":883,"holes":18},{"round":2,"score":65,"rating":942,"holes":18}]}
   ]
 }
