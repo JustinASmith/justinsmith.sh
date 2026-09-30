@@ -1,5 +1,5 @@
 import Image, { type StaticImageData } from "next/image";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { site } from "@/lib/site";
 import { SectionHeading } from "@/components/section-heading";
 import { ArrowUpRight } from "@/components/icons";
@@ -15,6 +15,19 @@ import vexalMobileDark from "@/public/work/vexal-mobile-dark.jpg";
 /** A screenshot, with an optional dark-mode twin shown when this site is dark. */
 type Shot = { light: StaticImageData; dark?: StaticImageData; alt: string };
 
+type Tone = "pine" | "lake" | "gold" | "accent" | "ink";
+
+/** One box in a "How it works" diagram. An `external` box is a service outside the site, drawn dashed. */
+type FlowNode = { label: string; note: string; tone: Tone; external?: boolean };
+
+/** Steps in order, optionally ending in a fork: the last step hands off to one of `fork`. */
+type Flow = {
+  /** Read by screen readers in place of the diagram. */
+  summary: string;
+  steps: FlowNode[];
+  fork?: FlowNode[];
+};
+
 type Showcase = {
   eyebrow: string;
   title: string;
@@ -28,8 +41,8 @@ type Showcase = {
   mobile: Shot;
   /** The pane behind the screenshots, tinted from this site's palette. */
   backdrop: string;
-  /** Optional "How it works" steps, shown across the bottom of the card. */
-  stack?: { label: string; body: ReactNode }[];
+  /** Optional "How it works" diagram, shown across the bottom of the card. */
+  flow?: Flow;
 };
 
 // Newest first.
@@ -56,24 +69,20 @@ const showcases: Showcase[] = [
     },
     mobile: { light: vexalMobile, dark: vexalMobileDark, alt: "The same homepage on a phone, with the Ask Vexal button" },
     backdrop: "bg-[linear-gradient(140deg,rgb(var(--lake)/0.2),rgb(var(--accent)/0.12)_55%,rgb(var(--gold)/0.18))]",
-    stack: [
-      {
-        label: "Static site",
-        body: "Astro, TypeScript, and Tailwind, served as static pages from Cloudflare. Only /api/* runs code, in one small Cloudflare Worker.",
-      },
-      {
-        label: "Jev routes first",
-        body: "Every chat message, project description, and request goes to Jev, TypeSafe’s System One model on OpenRouter, as a few typed questions: what is this, does a ready answer fit, is anything sensitive? Safety replies and ready answers go straight back, no writing model needed.",
-      },
-      {
-        label: "Claude writes the rest",
-        body: "Claude Haiku 4.5, also through OpenRouter, answers only from facts generated from the site’s own config, and drafts project briefs as JSON the Worker validates.",
-      },
-      {
-        label: "Requests",
-        body: "Saved to Cloudflare D1, then emailed to me through Cloudflare Email Service unless Jev marks it as spam. Turnstile, rate limits, and a same-origin check guard chat, briefs, and requests alike.",
-      },
-    ],
+    flow: {
+      summary:
+        "vexal.dev is a static Astro site. Every chat message, project description, and request goes through a Cloudflare Worker that checks Turnstile and rate limits, then to Jev on OpenRouter. Depending on Jev's answers, a ready answer goes straight back, Claude Haiku 4.5 writes an answer or project brief, or a screened request is saved to D1 and emailed.",
+      steps: [
+        { label: "vexal.dev", note: "static Astro site", tone: "pine" },
+        { label: "Worker", note: "Turnstile + rate limits", tone: "ink" },
+        { label: "Jev", note: "routes every message", tone: "lake" },
+      ],
+      fork: [
+        { label: "Ready answer", note: "no writer needed", tone: "gold" },
+        { label: "Claude Haiku 4.5", note: "writes answers & briefs", tone: "accent" },
+        { label: "D1 + email", note: "screened requests", tone: "pine" },
+      ],
+    },
   },
   {
     eyebrow: "Vexal client work · Starkville, MS",
@@ -96,24 +105,17 @@ const showcases: Showcase[] = [
     },
     mobile: { light: somMobile, alt: "The same homepage on a phone" },
     backdrop: "bg-[linear-gradient(140deg,rgb(var(--pine)/0.22),rgb(var(--gold)/0.14)_60%,rgb(var(--accent)/0.12))]",
-    stack: [
-      {
-        label: "Pages from sections",
-        body: "Astro renders every page on Cloudflare Pages Functions, from content in D1 and photos in R2. Each page is a list of typed sections, 22 kinds from hero to FAQ to an office tour, and one schema drives both the editor’s forms and the server’s checks.",
-      },
-      {
-        label: "Edit the real page",
-        body: "The builder is a React app that draws the site’s own components in an iframe with the real stylesheet, so staff edit exactly what visitors see. They click any text to edit it in place with Tiptap, drag sections into order, and swap photos, which are resized and stripped of location data before upload.",
-      },
-      {
-        label: "Draft, then publish",
-        body: "Edits autosave as drafts, with conflict detection when two people edit the same page. Nothing goes live until someone publishes, every publish is kept as a version that can be restored, and a renamed page redirects its old address.",
-      },
-      {
-        label: "Built for a clinic",
-        body: "The site holds no patient information: booking and intake stay in IntakeQ, which opens in a dialog. Staff sign in with a password plus a two-step code, roles are enforced on the server, and a strict Content-Security-Policy allows no inline scripts.",
-      },
-    ],
+    flow: {
+      summary:
+        "Staff edit the real page in the website builder. Edits autosave as a draft that isn't live. Publishing keeps every version and updates the live site, which Astro renders on Cloudflare from D1 and R2. Booking hands off to IntakeQ, where patient data stays, so it never touches the site.",
+      steps: [
+        { label: "Builder", note: "edit the real page", tone: "lake" },
+        { label: "Draft", note: "autosaved, not live", tone: "gold" },
+        { label: "Publish", note: "every version kept", tone: "accent" },
+        { label: "Live site", note: "Astro · D1 · R2", tone: "pine" },
+        { label: "IntakeQ", note: "booking & patient data", tone: "ink", external: true },
+      ],
+    },
   },
 ];
 
@@ -278,22 +280,101 @@ function ShowcaseCard({ showcase: s, flip }: { showcase: Showcase; flip?: boolea
         </figure>
       </div>
 
-      {s.stack ? (
+      {s.flow ? (
         <div className="border-t border-rule/70 bg-paper-2/40 px-7 py-8 sm:px-10 lg:order-3 lg:col-span-2">
           <p className="eyebrow">How it works</p>
-          <ol className="mt-5 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-            {s.stack.map((step, i) => (
-              <li key={step.label}>
-                <p className="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-3">
-                  <span className="text-accent-ink">{String(i + 1).padStart(2, "0")}</span> {step.label}
-                </p>
-                <p className="mt-2 text-[0.92rem] leading-relaxed text-ink-2">{step.body}</p>
-              </li>
-            ))}
-          </ol>
+          <FlowDiagram flow={s.flow} className="mt-6" />
         </div>
       ) : null}
     </article>
+  );
+}
+
+const toneDot: Record<Tone, string> = {
+  pine: "bg-pine",
+  lake: "bg-lake",
+  gold: "bg-gold",
+  accent: "bg-accent",
+  ink: "bg-ink/50",
+};
+
+/**
+ * Boxes joined by lines, drawn like the career trace: top to bottom on phones and tablets, left to right on wide
+ * screens. Links sit at 18.5px on small screens so they line up with each box's marker.
+ */
+function FlowDiagram({ flow, className }: { flow: Flow; className?: string }) {
+  return (
+    <div
+      role="img"
+      aria-label={flow.summary}
+      className={cn("flex flex-col items-start lg:flex-row lg:items-center", className)}
+    >
+      {flow.steps.map((node, i) => (
+        <Fragment key={node.label}>
+          {i > 0 ? <FlowLink dashed={node.external} /> : null}
+          <FlowBox node={node} />
+        </Fragment>
+      ))}
+      {flow.fork ? (
+        <>
+          <FlowLink arrow={false} />
+          <div className="ml-[18.5px] flex flex-col lg:ml-0 lg:grid lg:auto-rows-fr">
+            {flow.fork.map((node, i, all) => (
+              <div key={node.label} className="relative flex items-center py-1.5 pl-7">
+                {/* The fork's spine, drawn a row at a time so it ends at the first and last boxes. */}
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute left-0 w-px bg-ink/30",
+                    i === 0 ? "top-0 lg:top-1/2" : "top-0",
+                    i === all.length - 1 ? "bottom-1/2" : "bottom-0",
+                  )}
+                />
+                <span aria-hidden="true" className="absolute left-0 top-1/2 h-px w-7 bg-ink/30">
+                  <span className="absolute right-[1.5px] top-[-3.5px] size-2 rotate-45 border-r border-t border-ink/40" />
+                </span>
+                <FlowBox node={node} className="lg:w-full" />
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function FlowBox({ node, className }: { node: FlowNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl border bg-card px-3.5 py-2.5 lg:max-w-[12rem]",
+        node.external ? "border-dashed border-ink/30" : "border-rule",
+        className,
+      )}
+    >
+      <p className="flex items-center gap-2 font-mono text-[0.76rem] leading-tight text-ink">
+        <span aria-hidden="true" className={cn("size-2 shrink-0 rounded-sm", toneDot[node.tone])} />
+        {node.label}
+      </p>
+      <p className="mt-1 text-[0.8rem] leading-snug text-ink-3">{node.note}</p>
+    </div>
+  );
+}
+
+/** The line between two boxes, with an arrowhead pointing down (small screens) or right (wide screens). */
+function FlowLink({ dashed, arrow = true }: { dashed?: boolean; arrow?: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "relative ml-[18.5px] h-6 border-l border-ink/30 lg:ml-0 lg:h-0 lg:min-w-6 lg:flex-1 lg:border-l-0 lg:border-t",
+        dashed && "border-dashed",
+      )}
+    >
+      {arrow ? (
+        <span className="absolute bottom-[1.5px] left-[-4.5px] size-2 rotate-[135deg] border-r border-t border-ink/40 lg:bottom-auto lg:left-auto lg:right-[1.5px] lg:top-[-4.5px] lg:rotate-45" />
+      ) : null}
+    </span>
   );
 }
 
