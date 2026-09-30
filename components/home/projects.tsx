@@ -82,11 +82,11 @@ const showcases: Showcase[] = [
     body: (
       <>
         I designed and built it with Astro, connected online scheduling through IntakeQ, and I keep it running. Now
-        I&rsquo;m building a visual editor so the team can update their own pages, and refining and refreshing the design
-        along the way.
+        I&rsquo;m finishing a calmer redesign and a visual website builder, so the team can edit and publish their own
+        pages.
       </>
     ),
-    chips: ["Astro", "IntakeQ scheduling", "Responsive", "Visual editor (in progress)", "Design refresh (in progress)"],
+    chips: ["Astro", "React", "Cloudflare Pages", "D1", "R2", "Tiptap", "IntakeQ"],
     url: "https://stateofmindpsychiatric.com",
     domain: "stateofmindpsychiatric.com",
     linkLabel: "Visit the site",
@@ -96,6 +96,24 @@ const showcases: Showcase[] = [
     },
     mobile: { light: somMobile, alt: "The same homepage on a phone" },
     backdrop: "bg-[linear-gradient(140deg,rgb(var(--pine)/0.22),rgb(var(--gold)/0.14)_60%,rgb(var(--accent)/0.12))]",
+    stack: [
+      {
+        label: "Pages from sections",
+        body: "Astro renders every page on Cloudflare Pages Functions, from content in D1 and photos in R2. Each page is a list of typed sections, 22 kinds from hero to FAQ to an office tour, and one schema drives both the editor’s forms and the server’s checks.",
+      },
+      {
+        label: "Edit the real page",
+        body: "The builder is a React app that draws the site’s own components in an iframe with the real stylesheet, so staff edit exactly what visitors see. They click any text to edit it in place with Tiptap, drag sections into order, and swap photos, which are resized and stripped of location data before upload.",
+      },
+      {
+        label: "Draft, then publish",
+        body: "Edits autosave as drafts, with conflict detection when two people edit the same page. Nothing goes live until someone publishes, every publish is kept as a version that can be restored, and a renamed page redirects its old address.",
+      },
+      {
+        label: "Built for a clinic",
+        body: "The site holds no patient information: booking and intake stay in IntakeQ, which opens in a dialog. Staff sign in with a password plus a two-step code, roles are enforced on the server, and a strict Content-Security-Policy allows no inline scripts.",
+      },
+    ],
   },
 ];
 
