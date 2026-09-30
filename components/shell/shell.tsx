@@ -19,6 +19,7 @@ const LINKS: Record<string, string> = {
   ...(site.links.x ? { x: site.links.x } : {}),
   origin: site.company.url,
   pdga: site.links.pdga,
+  vexal: site.links.vexal,
   source: site.links.source,
 };
 const FILES = ["about.txt", "resume.txt", "contact.txt"];

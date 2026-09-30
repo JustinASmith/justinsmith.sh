@@ -15,6 +15,7 @@ export const site = {
     x: undefined as string | undefined,
     linkedin: "https://www.linkedin.com/in/justin-a-smith662/",
     pdga: "https://www.pdga.com/player/200786",
+    vexal: "https://vexal.dev",
     source: "https://github.com/JustinASmith/justinsmith.sh",
     estuaryPrs:
       "https://github.com/estuary/connectors/pulls?q=is%3Apr+is%3Amerged+author%3AJustinASmith",
