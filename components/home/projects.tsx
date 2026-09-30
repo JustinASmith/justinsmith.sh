@@ -1,11 +1,83 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import type { ReactNode } from "react";
 import { site } from "@/lib/site";
 import { SectionHeading } from "@/components/section-heading";
 import { ArrowUpRight } from "@/components/icons";
+import { cn } from "@/lib/utils";
 import { Workbench } from "./workbench";
 import somDesktop from "@/public/work/state-of-mind-desktop.jpg";
 import somMobile from "@/public/work/state-of-mind-mobile.jpg";
+import vexalDesktop from "@/public/work/vexal-desktop.jpg";
+import vexalDesktopDark from "@/public/work/vexal-desktop-dark.jpg";
+import vexalMobile from "@/public/work/vexal-mobile.jpg";
+import vexalMobileDark from "@/public/work/vexal-mobile-dark.jpg";
+
+/** A screenshot, with an optional dark-mode twin shown when this site is dark. */
+type Shot = { light: StaticImageData; dark?: StaticImageData; alt: string };
+
+type Showcase = {
+  eyebrow: string;
+  title: string;
+  lede: string;
+  body: ReactNode;
+  chips: string[];
+  url: string;
+  domain: string;
+  linkLabel: string;
+  desktop: Shot;
+  mobile: Shot;
+  /** The pane behind the screenshots, tinted from this site's palette. */
+  backdrop: string;
+};
+
+// Newest first.
+const showcases: Showcase[] = [
+  {
+    eyebrow: "My company · Founder",
+    title: "Vexal",
+    lede: "Vexal is my small software studio. It builds custom websites, mobile apps, automation, and internal tools for businesses, and offers software consulting.",
+    body: (
+      <>
+        I built vexal.dev with Astro and Tailwind on Cloudflare. A small Worker API takes estimate requests, turns a
+        visitor&rsquo;s description into a project brief they can review before sending, and runs Ask Vexal, an assistant
+        that answers from the site&rsquo;s own facts. State of Mind Psychiatry, below, is Vexal client work.
+      </>
+    ),
+    chips: ["Astro", "Tailwind CSS", "Cloudflare Workers", "D1", "AI assistant"],
+    url: site.links.vexal,
+    domain: "vexal.dev",
+    linkLabel: "Visit vexal.dev",
+    desktop: {
+      light: vexalDesktop,
+      dark: vexalDesktopDark,
+      alt: "The Vexal homepage: 'We build websites that work hard' beside a grid of bold geometric shapes",
+    },
+    mobile: { light: vexalMobile, dark: vexalMobileDark, alt: "The same homepage on a phone, with the Ask Vexal button" },
+    backdrop: "bg-[linear-gradient(140deg,rgb(var(--lake)/0.2),rgb(var(--accent)/0.12)_55%,rgb(var(--gold)/0.18))]",
+  },
+  {
+    eyebrow: "Vexal client work · Starkville, MS",
+    title: "State of Mind Psychiatry",
+    lede: "A local psychiatry practice needed a website that felt calm and trustworthy, and made booking an appointment painless.",
+    body: (
+      <>
+        I designed and built it with Astro, connected online scheduling through IntakeQ, and I keep it running. Now
+        I&rsquo;m building a visual editor so the team can update their own pages, and refining and refreshing the design
+        along the way.
+      </>
+    ),
+    chips: ["Astro", "IntakeQ scheduling", "Responsive", "Visual editor (in progress)", "Design refresh (in progress)"],
+    url: "https://stateofmindpsychiatric.com",
+    domain: "stateofmindpsychiatric.com",
+    linkLabel: "Visit the site",
+    desktop: {
+      light: somDesktop,
+      alt: "The State of Mind Psychiatry homepage: 'Transform Struggles into Strengths' beside a puzzle-piece illustration of a head",
+    },
+    mobile: { light: somMobile, alt: "The same homepage on a phone" },
+    backdrop: "bg-[linear-gradient(140deg,rgb(var(--pine)/0.22),rgb(var(--gold)/0.14)_60%,rgb(var(--accent)/0.12))]",
+  },
+];
 
 type Card = {
   kicker: string;
@@ -68,72 +140,11 @@ export function Projects() {
           <span aria-hidden="true" className="h-px flex-1 bg-rule" />
         </div>
 
-        <article className="card-surface reveal mt-6 grid overflow-hidden lg:grid-cols-[1fr_1.2fr]">
-          <div className="flex flex-col p-7 sm:p-10">
-            <p className="eyebrow">Client work · Starkville, MS</p>
-            <h3 className="mt-4 font-display text-[clamp(2rem,4vw,2.8rem)] leading-[1.02] tracking-[-0.025em] font-soft">
-              State of Mind Psychiatry
-            </h3>
-            <p className="mt-5 text-[1.12rem] leading-relaxed text-ink">
-              A local psychiatry practice needed a website that felt calm and trustworthy, and made booking an
-              appointment painless.
-            </p>
-            <p className="mt-3 leading-relaxed text-ink-2">
-              I designed and built it with Astro, connected online scheduling through IntakeQ, and I keep it running. Now
-              I&rsquo;m building a visual editor so the team can update their own pages, and refining and refreshing the
-              design along the way.
-            </p>
-            <ul className="mt-6 flex flex-wrap gap-1.5">
-              {["Astro", "IntakeQ scheduling", "Responsive", "Visual editor (in progress)", "Design refresh (in progress)"].map((t) => (
-                <li key={t} className="chip">
-                  {t}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-auto pt-8">
-              <a
-                href="https://stateofmindpsychiatric.com"
-                target="_blank"
-                rel="noreferrer"
-                className="link inline-flex items-center gap-1.5 font-medium"
-              >
-                Visit the site <ArrowUpRight size={16} />
-              </a>
-            </div>
-          </div>
-
-          <div className="relative min-h-[300px] overflow-hidden bg-[linear-gradient(140deg,rgb(var(--pine)/0.22),rgb(var(--gold)/0.14)_60%,rgb(var(--accent)/0.12))] px-6 pb-10 pt-8 sm:px-10 sm:pt-10">
-            <div aria-hidden="true" className="bg-dots absolute inset-0 opacity-50" />
-            <figure className="relative rounded-xl border border-ink/10 bg-card shadow-[0_30px_60px_-30px_rgb(var(--shadow)/0.6)]">
-              <div className="flex items-center gap-2 border-b border-ink/10 px-3 py-2">
-                <span className="flex gap-1.5" aria-hidden="true">
-                  <span className="h-2.5 w-2.5 rounded-full bg-ink/15" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-ink/15" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-ink/15" />
-                </span>
-                <span className="mx-auto truncate rounded-full bg-paper-2 px-3 py-0.5 font-mono text-[0.68rem] text-ink-3">
-                  stateofmindpsychiatric.com
-                </span>
-              </div>
-              <Image
-                src={somDesktop}
-                alt="The State of Mind Psychiatry homepage: 'Transform Struggles into Strengths' beside a puzzle-piece illustration of a head"
-                sizes="(min-width: 1024px) 560px, 90vw"
-                placeholder="blur"
-                className="h-auto w-full rounded-b-xl"
-              />
-            </figure>
-            <figure className="absolute -bottom-10 right-5 w-[26%] min-w-[92px] max-w-[150px] rounded-[1.4rem] border-[5px] border-ink bg-ink shadow-[0_24px_40px_-18px_rgb(var(--shadow)/0.7)] sm:right-8">
-              <Image
-                src={somMobile}
-                alt="The same homepage on a phone"
-                sizes="150px"
-                placeholder="blur"
-                className="h-auto w-full rounded-[1rem]"
-              />
-            </figure>
-          </div>
-        </article>
+        <div className="mt-6 space-y-6">
+          {showcases.map((showcase, i) => (
+            <ShowcaseCard key={showcase.title} showcase={showcase} flip={i % 2 === 1} />
+          ))}
+        </div>
 
         <div className="mt-6 grid gap-6 md:grid-cols-3">
           {cards.map((card) => (
@@ -170,6 +181,76 @@ export function Projects() {
         </div>
       </div>
     </section>
+  );
+}
+
+/** A shipped site: the story on one side, desktop and phone screenshots on the other. */
+function ShowcaseCard({ showcase: s, flip }: { showcase: Showcase; flip?: boolean }) {
+  return (
+    <article
+      className={cn(
+        "card-surface reveal grid overflow-hidden",
+        flip ? "lg:grid-cols-[1.2fr_1fr]" : "lg:grid-cols-[1fr_1.2fr]",
+      )}
+    >
+      <div className={cn("flex flex-col p-7 sm:p-10", flip && "lg:order-2")}>
+        <p className="eyebrow">{s.eyebrow}</p>
+        <h3 className="mt-4 font-display text-[clamp(2rem,4vw,2.8rem)] leading-[1.02] tracking-[-0.025em] font-soft">
+          {s.title}
+        </h3>
+        <p className="mt-5 text-[1.12rem] leading-relaxed text-ink">{s.lede}</p>
+        <p className="mt-3 leading-relaxed text-ink-2">{s.body}</p>
+        <ul className="mt-6 flex flex-wrap gap-1.5">
+          {s.chips.map((t) => (
+            <li key={t} className="chip">
+              {t}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-auto pt-8">
+          <a href={s.url} target="_blank" rel="noreferrer" className="link inline-flex items-center gap-1.5 font-medium">
+            {s.linkLabel} <ArrowUpRight size={16} />
+          </a>
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          "relative min-h-[300px] overflow-hidden px-6 pb-10 pt-8 sm:px-10 sm:pt-10",
+          s.backdrop,
+          flip && "lg:order-1",
+        )}
+      >
+        <div aria-hidden="true" className="bg-dots absolute inset-0 opacity-50" />
+        <figure className="relative rounded-xl border border-ink/10 bg-card shadow-[0_30px_60px_-30px_rgb(var(--shadow)/0.6)]">
+          <div className="flex items-center gap-2 border-b border-ink/10 px-3 py-2">
+            <span className="flex gap-1.5" aria-hidden="true">
+              <span className="h-2.5 w-2.5 rounded-full bg-ink/15" />
+              <span className="h-2.5 w-2.5 rounded-full bg-ink/15" />
+              <span className="h-2.5 w-2.5 rounded-full bg-ink/15" />
+            </span>
+            <span className="mx-auto truncate rounded-full bg-paper-2 px-3 py-0.5 font-mono text-[0.68rem] text-ink-3">
+              {s.domain}
+            </span>
+          </div>
+          <ThemedImage shot={s.desktop} sizes="(min-width: 1024px) 560px, 90vw" className="h-auto w-full rounded-b-xl" />
+        </figure>
+        <figure className="absolute -bottom-10 right-5 w-[26%] min-w-[92px] max-w-[150px] rounded-[1.4rem] border-[5px] border-ink bg-ink shadow-[0_24px_40px_-18px_rgb(var(--shadow)/0.7)] sm:right-8">
+          <ThemedImage shot={s.mobile} sizes="150px" className="h-auto w-full rounded-[1rem]" />
+        </figure>
+      </div>
+    </article>
+  );
+}
+
+/** Renders the light screenshot, and swaps in the dark one when this site is in dark mode. */
+function ThemedImage({ shot, sizes, className }: { shot: Shot; sizes: string; className: string }) {
+  if (!shot.dark) return <Image src={shot.light} alt={shot.alt} sizes={sizes} placeholder="blur" className={className} />;
+  return (
+    <>
+      <Image src={shot.light} alt={shot.alt} sizes={sizes} placeholder="blur" className={cn(className, "dark:hidden")} />
+      <Image src={shot.dark} alt={shot.alt} sizes={sizes} placeholder="blur" className={cn(className, "hidden dark:block")} />
+    </>
   );
 }
 
