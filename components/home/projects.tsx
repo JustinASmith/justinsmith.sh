@@ -28,6 +28,8 @@ type Showcase = {
   mobile: Shot;
   /** The pane behind the screenshots, tinted from this site's palette. */
   backdrop: string;
+  /** Optional "How it works" steps, shown across the bottom of the card. */
+  stack?: { label: string; body: ReactNode }[];
 };
 
 // Newest first.
@@ -38,12 +40,12 @@ const showcases: Showcase[] = [
     lede: "Vexal is my small software studio. It builds custom websites, mobile apps, automation, and internal tools for businesses, and offers software consulting.",
     body: (
       <>
-        I built vexal.dev with Astro and Tailwind on Cloudflare. A small Worker API takes estimate requests, turns a
-        visitor&rsquo;s description into a project brief they can review before sending, and runs Ask Vexal, an assistant
-        that answers from the site&rsquo;s own facts. State of Mind Psychiatry, below, is Vexal client work.
+        I built vexal.dev end to end. Visitors can request an estimate, have a rough description turned into a project
+        brief they review before sending, or chat with Ask Vexal, the site&rsquo;s assistant. State of Mind Psychiatry,
+        below, is Vexal client work.
       </>
     ),
-    chips: ["Astro", "Tailwind CSS", "Cloudflare Workers", "D1", "AI assistant"],
+    chips: ["Astro", "Cloudflare Workers", "D1", "OpenRouter", "Jev", "Claude Haiku 4.5"],
     url: site.links.vexal,
     domain: "vexal.dev",
     linkLabel: "Visit vexal.dev",
@@ -54,6 +56,24 @@ const showcases: Showcase[] = [
     },
     mobile: { light: vexalMobile, dark: vexalMobileDark, alt: "The same homepage on a phone, with the Ask Vexal button" },
     backdrop: "bg-[linear-gradient(140deg,rgb(var(--lake)/0.2),rgb(var(--accent)/0.12)_55%,rgb(var(--gold)/0.18))]",
+    stack: [
+      {
+        label: "Static site",
+        body: "Astro, TypeScript, and Tailwind, served as static pages from Cloudflare. Only /api/* runs code, in one small Cloudflare Worker.",
+      },
+      {
+        label: "Jev routes first",
+        body: "Every chat message, project description, and request goes to Jev, TypeSafe’s System One model on OpenRouter, as a few typed questions: what is this, does a ready answer fit, is anything sensitive? Safety replies and ready answers go straight back, no writing model needed.",
+      },
+      {
+        label: "Claude writes the rest",
+        body: "Claude Haiku 4.5, also through OpenRouter, answers only from facts generated from the site’s own config, and drafts project briefs as JSON the Worker validates.",
+      },
+      {
+        label: "Requests",
+        body: "Saved to Cloudflare D1, then emailed to me through Cloudflare Email Service unless Jev marks it as spam. Turnstile, rate limits, and a same-origin check guard chat, briefs, and requests alike.",
+      },
+    ],
   },
   {
     eyebrow: "Vexal client work · Starkville, MS",
@@ -239,6 +259,22 @@ function ShowcaseCard({ showcase: s, flip }: { showcase: Showcase; flip?: boolea
           <ThemedImage shot={s.mobile} sizes="150px" className="h-auto w-full rounded-[1rem]" />
         </figure>
       </div>
+
+      {s.stack ? (
+        <div className="border-t border-rule/70 bg-paper-2/40 px-7 py-8 sm:px-10 lg:order-3 lg:col-span-2">
+          <p className="eyebrow">How it works</p>
+          <ol className="mt-5 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+            {s.stack.map((step, i) => (
+              <li key={step.label}>
+                <p className="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-3">
+                  <span className="text-accent-ink">{String(i + 1).padStart(2, "0")}</span> {step.label}
+                </p>
+                <p className="mt-2 text-[0.92rem] leading-relaxed text-ink-2">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
     </article>
   );
 }
