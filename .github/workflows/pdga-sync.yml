@@ -8,9 +8,9 @@
 name: Sync PDGA data
 
 on:
-  schedule:
+  #schedule:
     # Every day at 12:17 UTC, early morning in Starkville.
-    - cron: "17 12 * * *"
+   # - cron: "17 12 * * *"
   workflow_dispatch:
 
 permissions:
