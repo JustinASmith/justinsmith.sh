@@ -1,20 +1,3 @@
 {
-  "buildCommand": "pnpm build",
-  "redirects": [
-    {
-      "source": "/go",
-      "destination": "https://origin-intro.justinasmith662.workers.dev/",
-      "permanent": false
-    },
-    {
-      "source": "/go/host",
-      "destination": "https://origin-intro.justinasmith662.workers.dev/host/",
-      "permanent": false
-    },
-    {
-      "source": "/go/stage",
-      "destination": "https://origin-intro.justinasmith662.workers.dev/stage/?go",
-      "permanent": false
-    }
-  ]
+  "buildCommand": "pnpm build"
 }
